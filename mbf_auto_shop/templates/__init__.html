@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ProfitPulse Dashboard</title>
+    <script src="https://unpkg.com/@tailwindcss/browser@4"></script>
+    <style type="text/tailwindcss">
+        @theme {
+            --color-primary: rgb(236, 24, 39);
+            --color-light: rgb(244, 243, 236);
+            --color-white: rgb(255, 248, 253);
+            --color-dark: rgb(41, 38, 38);
+            --color-black: rgb(23, 24, 26);
+        }
+      </style>
+</head>
+
+<body class="">
+    <div class="flex bg-black gap-x-3 text-black h-screen p-3 overflow-y-auto">
+        {% block base %}{% endblock %}
+    </div>
+</body>
+
+</html>
