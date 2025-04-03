@@ -18,3 +18,6 @@ class Part(models.Model):
 
     def __str__(self):
         return f"{self.name} - {self.category.name}"
+    
+    def get_type(self):
+        return self._type

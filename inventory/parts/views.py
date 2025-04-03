@@ -10,11 +10,11 @@ class PartListView(View):
 
 class PartCreateView(View):
     def get(self, request):
-        form = PartCreateModelForm, PartTypeModelForm()
+        form = PartCreateModelForm()
         return render(request, "parts/part-create.html", {"form": form})
 
     def post(self, request):
-        form = PartCreateModelForm, PartTypeModelForm(request.POST)
+        form = PartCreateModelForm(request.POST)
         if form.is_valid():
             form.save()
             return redirect("parts:list")
