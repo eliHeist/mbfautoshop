@@ -1,0 +1,41 @@
+
+<c-layout title="Parts List">
+    <div class="grid items-center md:flex md:justify-between">
+        <div class="breadcrumbs text-sm">
+            <ul>
+              <li><a>Inventory</a></li>
+              <li><a>Parts</a></li>
+            </ul>
+          </div>
+        <ul class="menu menu-vertical lg:menu-horizontal bg-base-100 rounded-box">
+            <li>
+                <a href="{% url 'parts:list' %}">Add New</a>
+            </li>
+        </ul>
+    </div>
+    <div class="grid sm:grid-cols-2">
+        {% for part in parts %}
+        <article class="card bg-base-100">
+            <div class="card-body">
+                <h3 class="card-title">{{ part.name }}</h3>
+                <div class="badge badge-sm">{{ part._type }}</div>
+                <div class="">
+                    <p>{{ part.part_number }}</p>
+                    <p>
+                        No: 
+                        <span>{{ part.part_number }}</span>
+                    </p>
+                    <p>
+                        Stock: 
+                        <span>{{ part.stock_quantity }}</span>
+                    </p>
+                    <p>
+                        Price: 
+                        <span>{{ part.selling_price }}</span>
+                    </p>
+                </div>
+            </div>
+        </article>
+        {% endfor %}
+    </div>
+</c-layout>

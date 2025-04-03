@@ -1,0 +1,14 @@
+@import "tailwindcss";
+
+@source "../../../../";
+
+@plugin "@tailwindcss/container-queries";
+@plugin "daisyui" {
+    themes: light --default;
+}
+
+@import "./css/_theme_light.css";
+
+body {
+    font-family: "Inter Tight", sans-serif;
+}

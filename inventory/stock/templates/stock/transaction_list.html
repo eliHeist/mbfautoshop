@@ -1,0 +1,30 @@
+{% extends '__layout__.html' %}
+
+{% block content %}
+<div class="max-w-4xl mx-auto p-6 bg-white shadow-md rounded-lg">
+    <h1 class="text-2xl font-bold mb-4">Stock Transactions</h1>
+    <a href="{% url 'transactions:add' %}" class="px-4 py-2 bg-primary text-white rounded-lg">New Transaction</a>
+    <table class="w-full mt-4 border-collapse border border-black">
+        <thead>
+            <tr class="bg-light">
+                <th class="border border-black px-4 py-2">Part</th>
+                <th class="border border-black px-4 py-2">Type</th>
+                <th class="border border-black px-4 py-2">Quantity</th>
+                <th class="border border-black px-4 py-2">Date</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for transaction in transactions %}
+            <tr class="hover:bg-gray-100">
+                <td class="border border-black px-4 py-2">{{ transaction.part.name }}</td>
+                <td class="border border-black px-4 py-2">{{ transaction.get_transaction_type_display }}</td>
+                <td class="border border-black px-4 py-2">{{ transaction.quantity }}</td>
+                <td class="border border-black px-4 py-2">{{ transaction.date }}</td>
+            </tr>
+            {% empty %}
+            <tr><td colspan="4" class="text-center py-4">No transactions recorded.</td></tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}

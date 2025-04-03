@@ -1,258 +1,224 @@
-{% extends '__layout__.html' %}
 
-{% block content %}
-<!-- Orders Header Section - Would contain the table that we're omitting -->
-<div class="w-3/5 p-6">
-    <!-- Orders Header Section -->
-    <div class="flex justify-between items-center mb-6">
-        <h1 class="text-2xl font-semibold">Orders</h1>
-
-        <!-- Header Actions -->
-        <div class="flex space-x-2">
-            <!-- Email Button -->
-            <button class="p-2 rounded-full bg-gray-100 hover:bg-gray-200 transition">
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-gray-600" fill="none"
-                    viewBox="0 0 24 24" stroke="currentColor">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                        d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
-                </svg>
-            </button>
-
-            <!-- Search Button -->
-            <button class="p-2 rounded-full bg-gray-100 hover:bg-gray-200 transition">
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-gray-600" fill="none"
-                    viewBox="0 0 24 24" stroke="currentColor">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                        d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-                </svg>
-            </button>
-
-            <!-- User Profile -->
-            <div class="flex items-center space-x-2">
-                <div class="w-8 h-8 rounded-full overflow-hidden">
-                    <img src="https://images.unsplash.com/photo-1494790108377-be9c29b29330?ixlib=rb-1.2.1&auto=format&fit=crop&w=100&q=80"
-                        alt="User profile" class="w-full h-full object-cover">
+<c-layout title="Home">
+    <div class="flex">
+        <!-- Orders Header Section - Would contain the table that we're omitting -->
+        <div class="w-3/5 p-6">
+            <!-- Orders Header Section -->
+            
+        
+            <!-- Filter Controls -->
+            <div class="flex justify-between items-center mb-6">
+                <!-- Filter Dropdowns -->
+                <div class="flex space-x-2">
+                    <!-- Status Filter -->
+                    <div class="relative">
+                        <select
+                            class="appearance-none bg-white border border-gray-300 rounded-lg px-4 py-2 pr-8 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
+                            <option>Any status</option>
+                            <option>Paid</option>
+                            <option>Delivered</option>
+                            <option>Completed</option>
+                        </select>
+                        <div
+                            class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-gray-700">
+                            <svg class="fill-current h-4 w-4" xmlns="http://www.w3.org/2000/svg"
+                                viewBox="0 0 20 20">
+                                <path
+                                    d="M9.293 12.95l.707.707L15.657 8l-1.414-1.414L10 10.828 5.757 6.586 4.343 8z" />
+                            </svg>
+                        </div>
+                    </div>
+        
+                    <!-- Price Range Filter -->
+                    <div class="relative">
+                        <select
+                            class="appearance-none bg-white border border-gray-300 rounded-lg px-4 py-2 pr-8 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
+                            <option>$100—$1500</option>
+                            <option>$1500—$3000</option>
+                            <option>$3000+</option>
+                        </select>
+                        <div
+                            class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-gray-700">
+                            <svg class="fill-current h-4 w-4" xmlns="http://www.w3.org/2000/svg"
+                                viewBox="0 0 20 20">
+                                <path
+                                    d="M9.293 12.95l.707.707L15.657 8l-1.414-1.414L10 10.828 5.757 6.586 4.343 8z" />
+                            </svg>
+                        </div>
+                    </div>
                 </div>
-                <div class="text-xs">
-                    <p class="font-medium">Kristina Evans</p>
-                    <p class="text-gray-500">kristinae@gmail.com</p>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Filter Controls -->
-    <div class="flex justify-between items-center mb-6">
-        <!-- Filter Dropdowns -->
-        <div class="flex space-x-2">
-            <!-- Status Filter -->
-            <div class="relative">
-                <select
-                    class="appearance-none bg-white border border-gray-300 rounded-lg px-4 py-2 pr-8 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
-                    <option>Any status</option>
-                    <option>Paid</option>
-                    <option>Delivered</option>
-                    <option>Completed</option>
-                </select>
-                <div
-                    class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-gray-700">
-                    <svg class="fill-current h-4 w-4" xmlns="http://www.w3.org/2000/svg"
-                        viewBox="0 0 20 20">
-                        <path
-                            d="M9.293 12.95l.707.707L15.657 8l-1.414-1.414L10 10.828 5.757 6.586 4.343 8z" />
-                    </svg>
-                </div>
-            </div>
-
-            <!-- Price Range Filter -->
-            <div class="relative">
-                <select
-                    class="appearance-none bg-white border border-gray-300 rounded-lg px-4 py-2 pr-8 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
-                    <option>$100—$1500</option>
-                    <option>$1500—$3000</option>
-                    <option>$3000+</option>
-                </select>
-                <div
-                    class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-gray-700">
-                    <svg class="fill-current h-4 w-4" xmlns="http://www.w3.org/2000/svg"
-                        viewBox="0 0 20 20">
-                        <path
-                            d="M9.293 12.95l.707.707L15.657 8l-1.414-1.414L10 10.828 5.757 6.586 4.343 8z" />
-                    </svg>
+        
+                <!-- Sort Control -->
+                <div class="relative">
+                    <select
+                        class="appearance-none bg-white border border-gray-300 rounded-lg px-4 py-2 pr-8 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
+                        <option>Sort by Date</option>
+                        <option>Sort by Amount</option>
+                        <option>Sort by Status</option>
+                    </select>
+                    <div
+                        class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-gray-700">
+                        <svg class="fill-current h-4 w-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20">
+                            <path d="M9.293 12.95l.707.707L15.657 8l-1.414-1.414L10 10.828 5.757 6.586 4.343 8z" />
+                        </svg>
+                    </div>
                 </div>
             </div>
-        </div>
-
-        <!-- Sort Control -->
-        <div class="relative">
-            <select
-                class="appearance-none bg-white border border-gray-300 rounded-lg px-4 py-2 pr-8 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
-                <option>Sort by Date</option>
-                <option>Sort by Amount</option>
-                <option>Sort by Status</option>
-            </select>
-            <div
-                class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-gray-700">
-                <svg class="fill-current h-4 w-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20">
-                    <path d="M9.293 12.95l.707.707L15.657 8l-1.414-1.414L10 10.828 5.757 6.586 4.343 8z" />
-                </svg>
+        
+            <!-- Note: Table is omitted as requested -->
+            <div class="text-gray-500 text-sm">
+                <!-- This is where the table would be in the original design -->
             </div>
         </div>
-    </div>
-
-    <!-- Note: Table is omitted as requested -->
-    <div class="text-gray-500 text-sm">
-        <!-- This is where the table would be in the original design -->
-    </div>
-</div>
-
-<!-- Order Details Sidebar -->
-<div class="w-2/5 border-l border-gray-200 p-6">
-    <!-- Order Details Header with Close Button -->
-    <div class="flex justify-between items-center mb-4">
-        <div>
-            <h2 class="text-lg font-medium">Order #390561</h2>
-            <div class="flex items-center mt-1 text-sm">
-                <span
-                    class="px-2 py-0.5 bg-yellow-100 text-yellow-800 rounded-full text-xs font-medium">Paid</span>
-                <span class="ml-2 text-gray-500">Jan 8, 13:52</span>
-            </div>
-        </div>
-        <button class="text-gray-400 hover:text-gray-600">
-            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24"
-                stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                    d="M6 18L18 6M6 6l12 12" />
-            </svg>
-        </button>
-    </div>
-
-    <!-- Customer Info -->
-    <div class="flex items-center mb-8">
-        <div class="w-16 h-16 rounded-full overflow-hidden bg-amber-400">
-            <img src="https://images.unsplash.com/photo-1560250097-0b93528c311a?ixlib=rb-1.2.1&auto=format&fit=crop&w=100&q=80"
-                alt="James Miller" class="w-full h-full object-cover">
-        </div>
-        <div class="ml-4">
-            <h3 class="text-lg font-medium">James Miller</h3>
-            <!-- Contact Options -->
-            <div class="flex space-x-2 mt-2">
-                <button class="p-2 bg-gray-100 rounded-full hover:bg-gray-200 transition">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-gray-600" fill="none"
-                        viewBox="0 0 24 24" stroke="currentColor">
+        
+        <!-- Order Details Sidebar -->
+        <div class="w-2/5 border-l border-gray-200 p-6">
+            <!-- Order Details Header with Close Button -->
+            <div class="flex justify-between items-center mb-4">
+                <div>
+                    <h2 class="text-lg font-medium">Order #390561</h2>
+                    <div class="flex items-center mt-1 text-sm">
+                        <span
+                            class="px-2 py-0.5 bg-yellow-100 text-yellow-800 rounded-full text-xs font-medium">Paid</span>
+                        <span class="ml-2 text-gray-500">Jan 8, 13:52</span>
+                    </div>
+                </div>
+                <button class="text-gray-400 hover:text-gray-600">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24"
+                        stroke="currentColor">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                            d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
-                    </svg>
-                </button>
-                <button class="p-2 bg-gray-100 rounded-full hover:bg-gray-200 transition">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-gray-600" fill="none"
-                        viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                            d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" />
-                    </svg>
-                </button>
-                <button class="p-2 bg-gray-100 rounded-full hover:bg-gray-200 transition">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-gray-600" fill="none"
-                        viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                            d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
+                            d="M6 18L18 6M6 6l12 12" />
                     </svg>
                 </button>
             </div>
+        
+            <!-- Customer Info -->
+            <div class="flex items-center mb-8">
+                <div class="w-16 h-16 rounded-full overflow-hidden bg-amber-400">
+                    <img src="https://images.unsplash.com/photo-1560250097-0b93528c311a?ixlib=rb-1.2.1&auto=format&fit=crop&w=100&q=80"
+                        alt="James Miller" class="w-full h-full object-cover">
+                </div>
+                <div class="ml-4">
+                    <h3 class="text-lg font-medium">James Miller</h3>
+                    <!-- Contact Options -->
+                    <div class="flex space-x-2 mt-2">
+                        <button class="p-2 bg-gray-100 rounded-full hover:bg-gray-200 transition">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-gray-600" fill="none"
+                                viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+                            </svg>
+                        </button>
+                        <button class="p-2 bg-gray-100 rounded-full hover:bg-gray-200 transition">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-gray-600" fill="none"
+                                viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" />
+                            </svg>
+                        </button>
+                        <button class="p-2 bg-gray-100 rounded-full hover:bg-gray-200 transition">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-gray-600" fill="none"
+                                viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
+                            </svg>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        
+            <!-- Order Items List -->
+            <div class="mb-8">
+                <h3 class="text-lg font-medium mb-4">Order items</h3>
+        
+                <!-- Item 1 -->
+                <div class="flex items-center py-3 border-b border-gray-100">
+                    <div class="w-12 h-12 bg-gray-100 rounded-lg flex items-center justify-center mr-4">
+                        <img src="https://www.powertools.com/wp-content/uploads/2021/08/drill-icon.png"
+                            alt="Ryobi ONE drill" class="w-8 h-8">
+                    </div>
+                    <div class="flex-1">
+                        <h4 class="text-sm font-medium">Ryobi ONE drill/driver</h4>
+                        <p class="text-sm text-gray-500">$409.00</p>
+                    </div>
+                </div>
+        
+                <!-- Item 2 -->
+                <div class="flex items-center py-3 border-b border-gray-100">
+                    <div class="w-12 h-12 bg-gray-100 rounded-lg flex items-center justify-center mr-4">
+                        <img src="https://www.powertools.com/wp-content/uploads/2021/08/socket-icon.png"
+                            alt="Socket Set" class="w-8 h-8">
+                    </div>
+                    <div class="flex-1">
+                        <h4 class="text-sm font-medium">Socket Systeme Electric</h4>
+                        <p class="text-sm text-gray-500">$238.00</p>
+                    </div>
+                </div>
+        
+                <!-- Item 3 -->
+                <div class="flex items-center py-3 border-b border-gray-100">
+                    <div class="w-12 h-12 bg-gray-100 rounded-lg flex items-center justify-center mr-4">
+                        <img src="https://www.powertools.com/wp-content/uploads/2021/08/receiver-icon.png"
+                            alt="DVB-T2 receiver" class="w-8 h-8">
+                    </div>
+                    <div class="flex-1">
+                        <h4 class="text-sm font-medium">DVB-T2 receiver box</h4>
+                        <p class="text-sm text-gray-500">$139.00</p>
+                    </div>
+                </div>
+        
+                <!-- Item 4 -->
+                <div class="flex items-center py-3 border-b border-gray-100">
+                    <div class="w-12 h-12 bg-gray-100 rounded-lg flex items-center justify-center mr-4">
+                        <img src="https://www.powertools.com/wp-content/uploads/2021/08/compressor-icon.png"
+                            alt="Compressor" class="w-8 h-8">
+                    </div>
+                    <div class="flex-1">
+                        <h4 class="text-sm font-medium">Inforca oil-free compressor</h4>
+                        <p class="text-sm text-gray-500">$135.00</p>
+                    </div>
+                </div>
+        
+                <!-- Item 5 -->
+                <div class="flex items-center py-3">
+                    <div class="w-12 h-12 bg-gray-100 rounded-lg flex items-center justify-center mr-4">
+                        <img src="https://www.powertools.com/wp-content/uploads/2021/08/welder-icon.png"
+                            alt="Welder" class="w-8 h-8">
+                    </div>
+                    <div class="flex-1">
+                        <h4 class="text-sm font-medium">TIG-200 welding inverter</h4>
+                        <p class="text-sm text-gray-500">$699.00</p>
+                    </div>
+                </div>
+            </div>
+        
+            <!-- Order Total -->
+            <div class="flex justify-between items-center py-4 border-t border-gray-200 mb-8">
+                <span class="text-lg font-medium">Total</span>
+                <span class="text-xl font-bold">$1,620.00</span>
+            </div>
+        
+            <!-- Action Buttons -->
+            <div class="flex space-x-3">
+                <button
+                    class="flex-1 py-2 px-4 bg-gray-900 text-white rounded-lg hover:bg-gray-800 transition flex items-center justify-center">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24"
+                        stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
+                    </svg>
+                    Track
+                </button>
+                <button
+                    class="flex-1 py-2 px-4 bg-yellow-100 text-yellow-800 rounded-lg hover:bg-yellow-200 transition flex items-center justify-center">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24"
+                        stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M3 10h10a8 8 0 018 8v2M3 10l6 6m-6-6l6-6" />
+                    </svg>
+                    Refund
+                </button>
+            </div>
         </div>
     </div>
-
-    <!-- Order Items List -->
-    <div class="mb-8">
-        <h3 class="text-lg font-medium mb-4">Order items</h3>
-
-        <!-- Item 1 -->
-        <div class="flex items-center py-3 border-b border-gray-100">
-            <div class="w-12 h-12 bg-gray-100 rounded-lg flex items-center justify-center mr-4">
-                <img src="https://www.powertools.com/wp-content/uploads/2021/08/drill-icon.png"
-                    alt="Ryobi ONE drill" class="w-8 h-8">
-            </div>
-            <div class="flex-1">
-                <h4 class="text-sm font-medium">Ryobi ONE drill/driver</h4>
-                <p class="text-sm text-gray-500">$409.00</p>
-            </div>
-        </div>
-
-        <!-- Item 2 -->
-        <div class="flex items-center py-3 border-b border-gray-100">
-            <div class="w-12 h-12 bg-gray-100 rounded-lg flex items-center justify-center mr-4">
-                <img src="https://www.powertools.com/wp-content/uploads/2021/08/socket-icon.png"
-                    alt="Socket Set" class="w-8 h-8">
-            </div>
-            <div class="flex-1">
-                <h4 class="text-sm font-medium">Socket Systeme Electric</h4>
-                <p class="text-sm text-gray-500">$238.00</p>
-            </div>
-        </div>
-
-        <!-- Item 3 -->
-        <div class="flex items-center py-3 border-b border-gray-100">
-            <div class="w-12 h-12 bg-gray-100 rounded-lg flex items-center justify-center mr-4">
-                <img src="https://www.powertools.com/wp-content/uploads/2021/08/receiver-icon.png"
-                    alt="DVB-T2 receiver" class="w-8 h-8">
-            </div>
-            <div class="flex-1">
-                <h4 class="text-sm font-medium">DVB-T2 receiver box</h4>
-                <p class="text-sm text-gray-500">$139.00</p>
-            </div>
-        </div>
-
-        <!-- Item 4 -->
-        <div class="flex items-center py-3 border-b border-gray-100">
-            <div class="w-12 h-12 bg-gray-100 rounded-lg flex items-center justify-center mr-4">
-                <img src="https://www.powertools.com/wp-content/uploads/2021/08/compressor-icon.png"
-                    alt="Compressor" class="w-8 h-8">
-            </div>
-            <div class="flex-1">
-                <h4 class="text-sm font-medium">Inforca oil-free compressor</h4>
-                <p class="text-sm text-gray-500">$135.00</p>
-            </div>
-        </div>
-
-        <!-- Item 5 -->
-        <div class="flex items-center py-3">
-            <div class="w-12 h-12 bg-gray-100 rounded-lg flex items-center justify-center mr-4">
-                <img src="https://www.powertools.com/wp-content/uploads/2021/08/welder-icon.png"
-                    alt="Welder" class="w-8 h-8">
-            </div>
-            <div class="flex-1">
-                <h4 class="text-sm font-medium">TIG-200 welding inverter</h4>
-                <p class="text-sm text-gray-500">$699.00</p>
-            </div>
-        </div>
-    </div>
-
-    <!-- Order Total -->
-    <div class="flex justify-between items-center py-4 border-t border-gray-200 mb-8">
-        <span class="text-lg font-medium">Total</span>
-        <span class="text-xl font-bold">$1,620.00</span>
-    </div>
-
-    <!-- Action Buttons -->
-    <div class="flex space-x-3">
-        <button
-            class="flex-1 py-2 px-4 bg-gray-900 text-white rounded-lg hover:bg-gray-800 transition flex items-center justify-center">
-            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24"
-                stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                    d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
-            </svg>
-            Track
-        </button>
-        <button
-            class="flex-1 py-2 px-4 bg-yellow-100 text-yellow-800 rounded-lg hover:bg-yellow-200 transition flex items-center justify-center">
-            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24"
-                stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                    d="M3 10h10a8 8 0 018 8v2M3 10l6 6m-6-6l6-6" />
-            </svg>
-            Refund
-        </button>
-    </div>
-</div>
-{% endblock %}
+</c-layout>

@@ -35,8 +35,14 @@ INSTALLED_APPS = [
     "django.contrib.sessions",
     "django.contrib.messages",
     "django.contrib.staticfiles",
+    
+    "django_htmx",
+    "django_unicorn",
+    'django_cotton',
+    # "django_browser_reload",
 ]
 INSTALLED_APPS += getAppNames()
+INSTALLED_APPS.append('django_cleanup.apps.CleanupConfig')
 
 MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
@@ -46,6 +52,9 @@ MIDDLEWARE = [
     "django.contrib.auth.middleware.AuthenticationMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
+    
+    "django_htmx.middleware.HtmxMiddleware",
+    # "django_browser_reload.middleware.BrowserReloadMiddleware",
 ]
 
 ROOT_URLCONF = "mbf_auto_shop.urls"
@@ -65,6 +74,11 @@ TEMPLATES = [
         },
     },
 ]
+
+# append each apps templates folder to APP_DIRS, use the getAppNames() and replace the . with a /
+for app in getAppNames():
+    folder = app.replace('.','/')
+    TEMPLATES[0]['DIRS'].append(BASE_DIR / f'{folder}/templates')
 
 WSGI_APPLICATION = "mbf_auto_shop.wsgi.application"
 
@@ -126,7 +140,8 @@ CSRF_COOKIE_SECURE = True
 STATIC_URL = "static/"
 STATIC_URL = '/static/'
 STATICFILES_DIRS = [
-    os.path.join(BASE_DIR, 'mbf_auto_shop/assets/static/'),
+    os.path.join(BASE_DIR, 'mbf_auto_shop/assets/static/dist/'),
+    os.path.join(BASE_DIR, 'mbf_auto_shop/assets/assets/'),
 ]
 STATIC_ROOT = os.path.join(BASE_DIR, 'mbf_auto_shop/assets/staticfiles')
 
@@ -137,6 +152,8 @@ MEDIA_ROOT = os.path.join(BASE_DIR, 'mbf_auto_shop/assets/media')
 # https://docs.djangoproject.com/en/4.2/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
+
+AUTH_USER_MODEL = 'accounts.User'
 
 # Email settings
 EMAIL_BACKEND = env('EMAIL_BACKEND')

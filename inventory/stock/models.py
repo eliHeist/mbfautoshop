@@ -10,7 +10,8 @@ class StockTransaction(models.Model):
     part = models.ForeignKey(Part, on_delete=models.CASCADE)
     transaction_type = models.CharField(max_length=3, choices=TRANSACTION_TYPES)
     quantity = models.PositiveIntegerField()
-    date = models.DateTimeField(auto_now_add=True)
+    date = models.DateTimeField()
+    date_added = models.DateTimeField(auto_now_add=True)
     remarks = models.TextField(blank=True, null=True)
 
     def __str__(self):

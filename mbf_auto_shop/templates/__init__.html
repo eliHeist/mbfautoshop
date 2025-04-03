@@ -1,3 +1,5 @@
+{% load unicorn static %}
+
 <!DOCTYPE html>
 <html lang="en">
 
@@ -5,22 +7,20 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>ProfitPulse Dashboard</title>
-    <script src="https://unpkg.com/@tailwindcss/browser@4"></script>
-    <style type="text/tailwindcss">
-        @theme {
-            --color-primary: rgb(236, 24, 39);
-            --color-light: rgb(244, 243, 236);
-            --color-white: rgb(255, 248, 253);
-            --color-dark: rgb(41, 38, 38);
-            --color-black: rgb(23, 24, 26);
-        }
-      </style>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter+Tight:ital,wght@0,100..900;1,100..900&display=swap');
+    </style>
+    {% unicorn_scripts %}
+    
+    <link rel="stylesheet" href="{% static 'compiled/index.css' %}">
 </head>
 
 <body class="">
-    <div class="flex bg-black gap-x-3 text-black h-screen p-3 overflow-y-auto">
+    <div class="flex bg-neutral text-neutral-content gap-x-3 h-screen p-2 overflow-y-auto">
         {% block base %}{% endblock %}
     </div>
+    {% csrf_token %}
+    <script src="{% static 'compiled/index.js' %}"></script>
 </body>
 
 </html>

@@ -1,6 +1,6 @@
 from django.db import models
 
-class PartCategory(models.Model):
+class PartType(models.Model):
     name = models.CharField(max_length=255)
 
     def __str__(self):
@@ -8,10 +8,13 @@ class PartCategory(models.Model):
 
 class Part(models.Model):
     name = models.CharField(max_length=255)
-    category = models.ForeignKey(PartCategory, on_delete=models.CASCADE)
-    price = models.DecimalField(max_digits=10, decimal_places=2)
+    _type = models.ForeignKey(PartType, on_delete=models.CASCADE, related_name='parts', null=True)
+    part_number = models.CharField(max_length=100)
+    selling_price = models.DecimalField(max_digits=20, decimal_places=0)
+    break_even_price = models.DecimalField(max_digits=20, decimal_places=0)
     stock_quantity = models.PositiveIntegerField(default=0)
-    reorder_level = models.PositiveIntegerField(default=5)
+
+    description = models.TextField(blank=True, null=True)
 
     def __str__(self):
         return f"{self.name} - {self.category.name}"
