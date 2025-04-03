@@ -1,0 +1,79 @@
+<c-layout title="Parts Create">
+    <div class="grid items-center md:flex md:justify-between">
+        <div class="breadcrumbs text-sm">
+            <ul>
+              <li><a>Inventory</a></li>
+              <li><a>Parts</a></li>
+            </ul>
+          </div>
+        <ul class="menu menu-vertical lg:menu-horizontal bg-base-100 rounded-box">
+            <li>
+                <a href="{% url 'parts:list' %}">Add New</a>
+            </li>
+        </ul>
+    </div>
+    <div class="grid">
+        <form action="" method="post">
+            <fieldset class="fieldset">
+                <legend class="fieldset-legend">Name *</legend>
+                {{ form.name|add_class:"input" }}
+                <p class="fieldset-label">{{ form.name.help_text }}</p>
+                <ul class="errors grid">
+                    {% for error in form.name.errors %}
+                    <li class="text-error">{{ error }}</li>
+                    {% endfor %}
+                </ul>
+            </fieldset>
+            <fieldset class="fieldset">
+                <legend class="fieldset-legend">Type *</legend>
+                {{ form._type|add_class:"select" }}
+                <p class="fieldset-label">{{ form._type.help_text }}</p>
+                <ul class="errors grid">
+                    {% for error in form._type.errors %}
+                    <li class="text-error">{{ error }}</li>
+                    {% endfor %}
+                </ul>
+            </fieldset>
+            <fieldset class="fieldset">
+                <legend class="fieldset-legend">Part Number *</legend>
+                {{ form.part_number|add_class:"input" }}
+                <p class="fieldset-label">{{ form.part_number.help_text }}</p>
+                <ul class="errors grid">
+                    {% for error in form.part_number.errors %}
+                    <li class="text-error">{{ error }}</li>
+                    {% endfor %}
+                </ul>
+            </fieldset>
+            <fieldset class="fieldset">
+                <legend class="fieldset-legend">Selling Price *</legend>
+                {{ form.selling_price|add_class:"input" }}
+                <p class="fieldset-label">{{ form.selling_price.help_text }}</p>
+                <ul class="errors grid">
+                    {% for error in form.selling_price.errors %}
+                    <li class="text-error">{{ error }}</li>
+                    {% endfor %}
+                </ul>
+            </fieldset>
+            <fieldset class="fieldset">
+                <legend class="fieldset-legend">Break Even Price *</legend>
+                {{ form.break_even_price|add_class:"input" }}
+                <p class="fieldset-label">{{ form.break_even_price.help_text }}</p>
+                <ul class="errors grid">
+                    {% for error in form.break_even_price.errors %}
+                    <li class="text-error">{{ error }}</li>
+                    {% endfor %}
+                </ul>
+            </fieldset>
+            <fieldset class="fieldset">
+                <legend class="fieldset-legend">Description *</legend>
+                {{ form.description|add_class:"textarea" }}
+                <p class="fieldset-label">{{ form.description.help_text }}</p>
+                <ul class="errors grid">
+                    {% for error in form.description.errors %}
+                    <li class="text-error">{{ error }}</li>
+                    {% endfor %}
+                </ul>
+            </fieldset>
+        </form>
+    </div>
+</c-layout>
