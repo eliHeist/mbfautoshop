@@ -1,0 +1,36 @@
+{% load widget_tweaks %}
+
+<c-layout title="Parts Create">
+    <div class="grid items-center md:flex md:justify-between">
+        <div class="breadcrumbs text-sm">
+            <ul>
+              <li><a>Inventory</a></li>
+              <li><a href="{% url 'parts:list' %}">Parts</a></li>
+              <li><a href="{% url 'parts:category-list' %}">Categories</a></li>
+              <li><a>Add New</a></li>
+            </ul>
+          </div>
+        <!-- <ul class="menu menu-vertical lg:menu-horizontal bg-base-100 rounded-box">
+            <li>
+                <a>Add Category</a>
+            </li>
+        </ul> -->
+    </div>
+    <div class="grid">
+        <form action="" method="post" class="grid gap-y-2 gap-x-4 max-w-lg mx-auto">
+            <fieldset class="fieldset">
+                <legend class="fieldset-legend">Name *</legend>
+                {{ form.name|add_class:"input w-full" }}
+                <p class="fieldset-label">{{ form.name.help_text }}</p>
+                <ul class="errors grid">
+                    {% for error in form.name.errors %}
+                    <li class="text-error">{{ error }}</li>
+                    {% endfor %}
+                </ul>
+            </fieldset>
+            <div class="grid">
+                <button type="submit" class="btn btn-success">Save</button>
+            </div>
+        </form>
+    </div>
+</c-layout>

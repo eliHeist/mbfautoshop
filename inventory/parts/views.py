@@ -1,7 +1,7 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.views import View
-from .models import Part
-from .forms import PartCreateModelForm, PartTypeModelForm
+from .models import Part, PartCategory
+from .forms import PartCreateModelForm, PartCategoryModelForm
 
 class PartListView(View):
     def get(self, request):
@@ -23,12 +23,12 @@ class PartCreateView(View):
 class PartUpdateView(View):
     def get(self, request, part_id):
         part = get_object_or_404(Part, id=part_id)
-        form = PartCreateModelForm, PartTypeModelForm(instance=part)
+        form = PartCreateModelForm(instance=part)
         return render(request, "parts/part-update.html", {"form": form})
 
     def post(self, request, part_id):
         part = get_object_or_404(Part, id=part_id)
-        form = PartCreateModelForm, PartTypeModelForm(request.POST, instance=part)
+        form = PartCreateModelForm(request.POST, instance=part)
         if form.is_valid():
             form.save()
             return redirect("parts:list")
@@ -39,3 +39,46 @@ class PartDeleteView(View):
         part = get_object_or_404(Part, id=part_id)
         part.delete()
         return redirect("parts:list")
+
+
+
+class PartCategoryListView(View):
+    def get(self, request):
+        part_categories = PartCategory.objects.all()
+        context = {
+            "part_categories": part_categories,
+        }
+        template_name = "parts/category-list.html"
+        return render(request, template_name, context)
+
+class PartCategoryCreateView(View):
+    def get(self, request):
+        form = PartCategoryModelForm()
+        return render(request, "parts/category-create.html", {"form": form})
+
+    def post(self, request):
+        form = PartCategoryModelForm(request.POST)
+        if form.is_valid():
+            form.save()
+            return redirect("parts:list")
+        return render(request, "parts/category-create.html", {"form": form})
+
+class PartCategoryUpdateView(View):
+    def get(self, request, part_id):
+        part = get_object_or_404(PartCategory, id=part_id)
+        form = PartCategoryModelForm(instance=part)
+        return render(request, "parts/category-update.html", {"form": form})
+
+    def post(self, request, part_id):
+        part = get_object_or_404(PartCategory, id=part_id)
+        form = PartCategoryModelForm(request.POST, instance=part)
+        if form.is_valid():
+            form.save()
+            return redirect("parts:list")
+        return render(request, "parts/category-update.html", {"form": form})
+
+class PartCategoryDeleteView(View):
+    def post(self, request, part_id):
+        part = get_object_or_404(PartCategory, id=part_id)
+        part.delete()
+        return redirect("parts:category-list")
