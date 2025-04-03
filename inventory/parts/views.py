@@ -18,7 +18,7 @@ class PartCreateView(View):
         if form.is_valid():
             form.save()
             return redirect("parts:list")
-        return render(request, "parts/part_form.html", {"form": form})
+        return render(request, "parts/part-create.html", {"form": form})
 
 class PartUpdateView(View):
     def get(self, request, part_id):
