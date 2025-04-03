@@ -16,11 +16,11 @@
         </ul>
     </div>
     <div class="grid sm:grid-cols-2">
-        {% for type in types %}
+        {% for category in categories %}
         <article class="card bg-base-100">
             <div class="card-body">
-                <h3 class="card-title">{{ type.name }}</h3>
-                <div class="badge badge-sm">{{ type.get_total_parts }} Parts</div>
+                <h3 class="card-title">{{ category.name }}</h3>
+                <div class="badge badge-sm">{{ category.get_total_parts }} Parts</div>
             </div>
         </article>
         {% endfor %}
