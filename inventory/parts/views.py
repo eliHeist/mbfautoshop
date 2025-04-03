@@ -8,6 +8,11 @@ class PartListView(View):
         parts = Part.objects.all()
         return render(request, "parts/part-list.html", {"parts": parts})
 
+class PartDetailView(View):
+    def get(self, request, pk):
+        part = Part.objects.get(pk=pk)
+        return render(request, "parts/part-detail.html", {"part": part})
+
 class PartCreateView(View):
     def get(self, request):
         form = PartCreateModelForm()
@@ -42,6 +47,7 @@ class PartDeleteView(View):
 
 
 
+
 class PartCategoryListView(View):
     def get(self, request):
         part_categories = PartCategory.objects.all()
@@ -49,6 +55,15 @@ class PartCategoryListView(View):
             "part_categories": part_categories,
         }
         template_name = "parts/category-list.html"
+        return render(request, template_name, context)
+
+class PartCategoryDetailView(View):
+    def get(self, request, pk):
+        part_category = PartCategory.objects.get(pk=pk)
+        context = {
+            "part_category": part_category,
+        }
+        template_name = "parts/category-detail.html"
         return render(request, template_name, context)
 
 class PartCategoryCreateView(View):
@@ -59,7 +74,7 @@ class PartCategoryCreateView(View):
     def post(self, request):
         form = PartCategoryModelForm(request.POST)
         if form.is_valid():
-            form.save()
+            instance = form.save()
             return redirect("parts:list")
         return render(request, "parts/category-create.html", {"form": form})
 
