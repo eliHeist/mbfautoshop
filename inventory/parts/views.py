@@ -1,4 +1,5 @@
 from django.shortcuts import render, redirect, get_object_or_404
+from django.urls import reverse_lazy
 from django.views import View
 from .models import Part, PartCategory
 from .forms import PartCreateModelForm, PartCategoryModelForm
@@ -21,8 +22,8 @@ class PartCreateView(View):
     def post(self, request):
         form = PartCreateModelForm(request.POST)
         if form.is_valid():
-            form.save()
-            return redirect("parts:list")
+            instance = form.save()
+            return redirect(reverse_lazy("parts:detail", kwargs={"pk": instance.pk}))
         return render(request, "parts/part-create.html", {"form": form})
 
 class PartUpdateView(View):
@@ -35,8 +36,8 @@ class PartUpdateView(View):
         part = get_object_or_404(Part, id=part_id)
         form = PartCreateModelForm(request.POST, instance=part)
         if form.is_valid():
-            form.save()
-            return redirect("parts:list")
+            instance = form.save()
+            return redirect(reverse_lazy("parts:detail", kwargs={"pk": instance.pk}))
         return render(request, "parts/part_form.html", {"form": form})
 
 class PartDeleteView(View):
@@ -75,7 +76,7 @@ class PartCategoryCreateView(View):
         form = PartCategoryModelForm(request.POST)
         if form.is_valid():
             instance = form.save()
-            return redirect("parts:list")
+            return redirect(reverse_lazy("parts:category-detail", kwargs={"pk": instance.pk}))
         return render(request, "parts/category-create.html", {"form": form})
 
 class PartCategoryUpdateView(View):
@@ -88,8 +89,8 @@ class PartCategoryUpdateView(View):
         part = get_object_or_404(PartCategory, id=part_id)
         form = PartCategoryModelForm(request.POST, instance=part)
         if form.is_valid():
-            form.save()
-            return redirect("parts:list")
+            instance = form.save()
+            return redirect(reverse_lazy("parts:category-detail", kwargs={"pk": instance.pk}))
         return render(request, "parts/category-update.html", {"form": form})
 
 class PartCategoryDeleteView(View):
