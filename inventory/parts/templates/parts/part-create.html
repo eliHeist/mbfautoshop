@@ -1,3 +1,5 @@
+{% load widget_tweaks %}
+
 <c-layout title="Parts Create">
     <div class="grid items-center md:flex md:justify-between">
         <div class="breadcrumbs text-sm">
@@ -26,10 +28,10 @@
             </fieldset>
             <fieldset class="fieldset">
                 <legend class="fieldset-legend">Type *</legend>
-                {{ form._type|add_class:"select" }}
-                <p class="fieldset-label">{{ form._type.help_text }}</p>
+                {{ form.type|add_class:"select" }}
+                <p class="fieldset-label">{{ form.type.help_text }}</p>
                 <ul class="errors grid">
-                    {% for error in form._type.errors %}
+                    {% for error in form.type.errors %}
                     <li class="text-error">{{ error }}</li>
                     {% endfor %}
                 </ul>

@@ -39,7 +39,7 @@ INSTALLED_APPS = [
     "django_htmx",
     "django_unicorn",
     'django_cotton',
-    # "django_browser_reload",
+    'widget_tweaks',
 ]
 INSTALLED_APPS += getAppNames()
 INSTALLED_APPS.append('django_cleanup.apps.CleanupConfig')

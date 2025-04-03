@@ -1,14 +1,14 @@
-from django.forms import ModelForm
+from django import forms
 from .models import Part, PartType
 
 
-class PartCreateModelForm(ModelForm):
+class PartCreateModelForm(forms.ModelForm):
     class Meta:
         model = Part
-        fields = ["name", "_type", "part_number", "selling_price", "description"]
+        fields = ["name", "type", "part_number", "selling_price", "description"]
 
 
-class PartTypeModelForm(ModelForm):
+class PartTypeModelForm(forms.ModelForm):
     class Meta:
         model = PartType
         fields = ["name"]
