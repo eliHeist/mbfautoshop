@@ -1,7 +1,7 @@
 
 
 <c-layout title="Part Categories List">
-    <div class="grid items-center md:flex md:justify-between">
+    <div class="grid items-center md:flex md:justify-between mb-3">
         <div class="breadcrumbs text-sm">
             <ul>
               <li><a>Inventory</a></li>
@@ -15,12 +15,17 @@
             </li>
         </ul>
     </div>
-    <div class="grid sm:grid-cols-2">
-        {% for category in categories %}
+    <div class="grid sm:grid-cols-2 gap-3">
+        {% for category in part_categories %}
         <article class="card bg-base-100">
             <div class="card-body">
                 <h3 class="card-title">{{ category.name }}</h3>
-                <div class="badge badge-sm">{{ category.get_total_parts }} Parts</div>
+                <div class="badge badge-sm badge-neutral">{{ category.get_total_parts }} Parts</div>
+                <div class="card-actions">
+                    <a href="{% url 'parts:category-detail' category.pk %}">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-eye-icon lucide-eye size-6"><path d="M2.062 12.348a1 1 0 0 1 0-.696 10.75 10.75 0 0 1 19.876 0 1 1 0 0 1 0 .696 10.75 10.75 0 0 1-19.876 0"/><circle cx="12" cy="12" r="3"/></svg>
+                    </a>
+                </div>
             </div>
         </article>
         {% endfor %}

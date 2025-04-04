@@ -80,21 +80,29 @@ class PartCategoryCreateView(View):
         return render(request, "parts/category-create.html", {"form": form})
 
 class PartCategoryUpdateView(View):
-    def get(self, request, part_id):
-        part = get_object_or_404(PartCategory, id=part_id)
-        form = PartCategoryModelForm(instance=part)
-        return render(request, "parts/category-update.html", {"form": form})
+    def get(self, request, pk):
+        part_category = get_object_or_404(PartCategory, id=pk)
+        form = PartCategoryModelForm(instance=part_category)
+        context = {
+            "form": form,
+            "part_category": part_category
+        }        
+        return render(request, "parts/category-update.html", context)
 
-    def post(self, request, part_id):
-        part = get_object_or_404(PartCategory, id=part_id)
-        form = PartCategoryModelForm(request.POST, instance=part)
+    def post(self, request, pk):
+        part_category = get_object_or_404(PartCategory, id=pk)
+        form = PartCategoryModelForm(request.POST, instance=part_category)
         if form.is_valid():
             instance = form.save()
             return redirect(reverse_lazy("parts:category-detail", kwargs={"pk": instance.pk}))
-        return render(request, "parts/category-update.html", {"form": form})
+        context = {
+            "form": form,
+            "part_category": part_category
+        }            
+        return render(request, "parts/category-update.html", context)
 
 class PartCategoryDeleteView(View):
-    def post(self, request, part_id):
-        part = get_object_or_404(PartCategory, id=part_id)
-        part.delete()
+    def post(self, request, pk):
+        part_category = get_object_or_404(PartCategory, id=pk)
+        part_category.delete()
         return redirect("parts:category-list")

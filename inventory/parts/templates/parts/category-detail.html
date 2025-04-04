@@ -1,0 +1,66 @@
+{% load widget_tweaks %}
+
+<c-layout title="{{ part_category.name }}">
+    <div class="grid items-center md:flex md:justify-between mb-3">
+        <div class="breadcrumbs text-sm">
+            <ul>
+                <li><a>Inventory</a></li>
+                <li><a href="{% url 'parts:list' %}">Parts</a></li>
+                <li><a href="{% url 'parts:category-list' %}">Categories</a></li>
+                <li><a>{{ part_category.name }}</a></li>
+            </ul>
+        </div>
+        <ul class="menu menu-vertical lg:menu-horizontal bg-base-100 rounded-box">
+            <li>
+                <a href="{% url 'parts:category-update' part_category.id %}">Update</a>
+            </li>
+        </ul>
+    </div>
+    <div class="grid sm:flex gap-6">
+        <div class="card bg-base-100 min-w-64">
+            <div class="card-body sm:sticky sm:top-0">
+                <div class="grid gap-3">
+                    <div>
+                        <h3 class="card-title">{{ part_category.pk }}</h3>
+                        <p class="text-xs opacity-50">ID</p>
+                    </div>
+                    <div>
+                        <h3 class="card-title">{{ part_category.name }}</h3>
+                        <p class="text-xs opacity-50">NAME</p>
+                    </div>
+                    <div>
+                        <h3 class="card-title">{{ part_category.get_parts.count }}</h3>
+                        <p class="text-xs opacity-50">PARTS</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="sm:flex-1">
+            <ul class="list bg-base-100 rounded-box shadow-md">
+
+                <li class="p-4 pb-2 text-xs opacity-60 tracking-wide">Parts</li>
+
+                {% for part in part_category.get_parts %}
+                <li class="list-row">
+                    <div class="text-4xl font-thin opacity-30 tabular-nums">{{ part.pk }}</div>
+                    <div class="list-col-grow">
+                        <div>{{ part.name }}</div>
+                        <div class="text-xs uppercase font-semibold opacity-60">{{ part.get_stock }} in stock</div>
+                    </div>
+                    <a href="{% url 'parts:detail' part.pk %}" class="btn btn-square btn-ghost">
+                        <svg class="size-[1.2em]" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+                            <g stroke-linejoin="round" stroke-linecap="round" stroke-width="2" fill="none"
+                                stroke="currentColor">
+                                <path d="M6 3L20 12 6 21 6 3z"></path>
+                            </g>
+                        </svg>
+                    </a>
+                </li>
+                {% empty %}
+                <p class="text-lg mx-auto p-3">No Parts for this category yet</p>
+                {% endfor %}
+
+            </ul>
+        </div>
+    </div>
+</c-layout>

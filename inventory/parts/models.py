@@ -6,9 +6,12 @@ class PartCategory(models.Model):
     def __str__(self):
         return self.name
     
-    def save(self, force_insert = ..., force_update = ..., using = ..., update_fields = ...):
+    def save(self):
         self.name = self.name.upper()
-        return super().save(force_insert, force_update, using, update_fields)
+        return super().save()
+    
+    def get_parts(self):
+        return self.parts.all()
 
 class Part(models.Model):
     name = models.CharField(max_length=255)
@@ -25,3 +28,6 @@ class Part(models.Model):
     
     def get_type(self):
         return self._type
+    
+    def get_stock(self):
+        return self.stock_quantity

@@ -7,7 +7,8 @@
               <li><a>Inventory</a></li>
               <li><a href="{% url 'parts:list' %}">Parts</a></li>
               <li><a href="{% url 'parts:category-list' %}">Categories</a></li>
-              <li><a>Add New</a></li>
+              <li><a href="{% url 'parts:category-detail' part_category.pk %}">{{ part_category.name }}</a></li>
+              <li><a>Update</a></li>
             </ul>
           </div>
         <!-- <ul class="menu menu-vertical lg:menu-horizontal bg-base-100 rounded-box">
@@ -30,7 +31,7 @@
                 </ul>
             </fieldset>
             <div class="grid">
-                <button type="submit" class="btn btn-success">Save</button>
+                <button type="submit" class="btn btn-info">Update</button>
             </div>
         </form>
     </div>
