@@ -6,9 +6,10 @@
             <ul>
               <li><a>Inventory</a></li>
               <li><a href="{% url 'parts:list' %}">Parts</a></li>
-              <li><a>Add New</a></li>
+              <li><a href="{% url 'parts:detail' part.pk %}">{{ part.name }}</a></li>
+              <li><a>Update</a></li>
             </ul>
-          </div>
+        </div>
         <ul class="menu menu-vertical lg:menu-horizontal bg-base-100 rounded-box">
             <li>
                 <a>Add Category</a>
@@ -69,7 +70,7 @@
                 </ul>
             </fieldset>
             <div class="sm:col-span-2 grid">
-                <button type="submit" class="btn btn-success">Save</button>
+                <button type="submit" class="btn btn-info">Update</button>
             </div>
         </form>
     </div>
