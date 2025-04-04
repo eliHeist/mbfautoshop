@@ -17,25 +17,24 @@
             </li>
         </ul>
     </div>
-    <div class="grid sm:grid-cols-2">
+    <div class="grid sm:grid-cols-2 md:grid-cols-3 gap-3">
         {% for part in parts %}
         <article class="card bg-base-100">
             <div class="card-body">
                 <h3 class="card-title">{{ part.name }}</h3>
                 <div class="badge badge-sm">{{ part.get_type }}</div>
                 <div class="">
-                    <p>{{ part.part_number }}</p>
                     <p>
                         No: 
-                        <span>{{ part.part_number }}</span>
+                        <span class="font-semibold">{{ part.part_number }}</span>
                     </p>
                     <p>
                         Stock: 
-                        <span>{{ part.stock_quantity }}</span>
+                        <span class="font-semibold">{{ part.stock_quantity }}</span>
                     </p>
                     <p>
                         Price: 
-                        <span>{{ part.selling_price }}</span>
+                        <span class="font-semibold">{{ part.selling_price }}</span>
                     </p>
                 </div>
             </div>

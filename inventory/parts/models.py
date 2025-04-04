@@ -27,7 +27,7 @@ class Part(models.Model):
         return f"{self.name} - {self.type.name}"
     
     def get_type(self):
-        return self._type
+        return self.type
     
     def get_stock(self):
         return self.stock_quantity
