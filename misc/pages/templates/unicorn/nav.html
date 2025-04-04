@@ -1,4 +1,7 @@
-<div class="p-5">
+
+<div class="p-6 side-nav bg-neutral" x-data="{
+    show: false,
+}" :class="show ? 'show' : ''">
     <!-- Brand Logo and Name -->
     <div class="flex items-center space-x-2 mb-8">
         <div class="w-6 h-6 bg-white rounded-full flex items-center justify-center">
@@ -17,7 +20,7 @@
             {% for nav_link in nav_links %}
             {% if nav_link.type == 1 %}
             <li>
-                <a href="{{ nav_link.url }}" class="flex items-center justify-items-start gap-x-3 p-3 rounded-lg transition" :class="window.location.pathname.includes('{{ link.url }}') ? 'bg-base-300 text-base-content' : 'hover:bg-gray-800'">
+                <a href="{{ nav_link.url }}" class="flex items-center justify-items-start gap-x-3 p-3 rounded-lg transition" :class="window.location.pathname == '{{ link.url }}' ? 'bg-base-300 text-base-content' : 'hover:bg-gray-800'">
                     {{ nav_link.icon|safe }}
                     <span>{{ nav_link.name }}</span>
                 </a>
@@ -92,15 +95,13 @@
         </a> -->
     </nav>
 
-    <!-- Logout Button -->
-    <!-- <div class="mt-auto pt-6">
-        <a href="#" class="flex items-center space-x-3 p-3 rounded-lg hover:bg-gray-800 transition">
-            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24"
-                stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                    d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
-            </svg>
-            <span>Log out</span>
-        </a>
-    </div> -->
+    <button @click="show = !show" title="Menu button" class="hamburger-btn grid grid-flow-col md:hidden"
+        :aria-expanded="show ? true : false">
+        <svg class="hamburger w-10" fill="none" viewbox="-10 -10 120 120">
+            <path class="line" d="m 20 40 h 60 a 1 1 0 0 1 0 20 h -60 a 1 1 0 0 1 0 -40 h 30 v 70"></path>
+        </svg>
+        <div class="text-primary-content h-full grid content-center pr-2 text-sm">
+            <span>Menu</span>
+        </div>
+    </button>
 </div>

@@ -12,3 +12,64 @@
 body {
     font-family: "Inter Tight", sans-serif;
 }
+
+.side-nav {
+    position: fixed;
+    z-index: 99999;
+
+    top: 0;
+    bottom: 0;
+    right: 0;
+    left: 100%;
+
+    transition-property: left;
+    transition-duration: 500ms;
+    transition-timing-function: ease-in-out;
+
+    &.show {
+        left: 0;
+        inset: 0;
+    }
+
+    @media (min-width: 768px) {
+        position: static;
+        width: auto;
+        transition: width 300ms ease-in-out;
+    }
+}
+
+.hamburger-btn {
+    position: fixed;
+    bottom: 2rem;
+    right: 2rem;
+    overflow: hidden;
+    border-radius: .25rem;
+    border-color: var(--color-primary-content);
+    border-style: solid;
+    border-width: 1px;
+
+    background-color: var(--color-primary);
+
+    svg {
+        stroke: var(--color-primary-content);
+        stroke-width: 10;
+        stroke-linecap: round;
+        stroke-linejoin: round;
+        transition: translate .5s, rotate .5s;
+    }
+
+    .line {
+        stroke-dasharray: 60 31 60 300;
+        transition: .5s;
+    }
+
+    &[aria-expanded="true"] .hamburger {
+        translate: 2px -3px;
+        rotate: .125turn;
+    }
+
+    &[aria-expanded="true"] .line {
+        stroke-dasharray: 60 105 60 300;
+        stroke-dashoffset: -90;
+    }
+}
