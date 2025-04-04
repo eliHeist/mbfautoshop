@@ -12,6 +12,9 @@ class PartCategory(models.Model):
     
     def get_parts(self):
         return self.parts.all()
+    
+    def get_total_parts(self):
+        return self.parts.count()
 
 class Part(models.Model):
     name = models.CharField(max_length=255)
