@@ -3,18 +3,22 @@ from django.urls import reverse_lazy
 from django.views import View
 from .models import Part, PartCategory
 from .forms import PartCreateModelForm, PartCategoryModelForm
+from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin
 
-class PartListView(View):
+class PartListView(LoginRequiredMixin, PermissionRequiredMixin, View):
+    permission_required = "parts.view_part"
     def get(self, request):
         parts = Part.objects.all()
         return render(request, "parts/part-list.html", {"parts": parts})
 
-class PartDetailView(View):
+class PartDetailView(LoginRequiredMixin, PermissionRequiredMixin, View):
+    permission_required = "parts.view_part"
     def get(self, request, pk):
         part = Part.objects.get(pk=pk)
         return render(request, "parts/part-detail.html", {"part": part})
 
-class PartCreateView(View):
+class PartCreateView(LoginRequiredMixin, PermissionRequiredMixin, View):
+    permission_required = "parts.add_part"
     def get(self, request):
         form = PartCreateModelForm()
         return render(request, "parts/part-create.html", {"form": form})
@@ -26,7 +30,8 @@ class PartCreateView(View):
             return redirect(reverse_lazy("parts:detail", kwargs={"pk": instance.pk}))
         return render(request, "parts/part-create.html", {"form": form})
 
-class PartUpdateView(View):
+class PartUpdateView(LoginRequiredMixin, PermissionRequiredMixin, View):
+    permission_required = "parts.change_part"
     def get(self, request, pk):
         part = get_object_or_404(Part, id=pk)
         form = PartCreateModelForm(instance=part)
@@ -49,7 +54,8 @@ class PartUpdateView(View):
         }
         return render(request, "parts/part_form.html", context)
 
-class PartDeleteView(View):
+class PartDeleteView(LoginRequiredMixin, PermissionRequiredMixin, View):
+    permission_required = "parts.delete_part"
     def post(self, request, pk):
         part = get_object_or_404(Part, id=pk)
         part.delete()
@@ -58,7 +64,8 @@ class PartDeleteView(View):
 
 
 
-class PartCategoryListView(View):
+class PartCategoryListView(LoginRequiredMixin, PermissionRequiredMixin, View):
+    permission_required = "parts.view_partcategory"
     def get(self, request):
         part_categories = PartCategory.objects.all()
         context = {
@@ -67,7 +74,8 @@ class PartCategoryListView(View):
         template_name = "parts/category-list.html"
         return render(request, template_name, context)
 
-class PartCategoryDetailView(View):
+class PartCategoryDetailView(LoginRequiredMixin, PermissionRequiredMixin, View):
+    permission_required = "parts.view_partcategory"
     def get(self, request, pk):
         part_category = PartCategory.objects.get(pk=pk)
         context = {
@@ -76,7 +84,8 @@ class PartCategoryDetailView(View):
         template_name = "parts/category-detail.html"
         return render(request, template_name, context)
 
-class PartCategoryCreateView(View):
+class PartCategoryCreateView(LoginRequiredMixin, PermissionRequiredMixin, View):
+    permission_required = "parts.add_partcategory"
     def get(self, request):
         form = PartCategoryModelForm()
         return render(request, "parts/category-create.html", {"form": form})
@@ -88,7 +97,8 @@ class PartCategoryCreateView(View):
             return redirect(reverse_lazy("parts:category-detail", kwargs={"pk": instance.pk}))
         return render(request, "parts/category-create.html", {"form": form})
 
-class PartCategoryUpdateView(View):
+class PartCategoryUpdateView(LoginRequiredMixin, PermissionRequiredMixin, View):
+    permission_required = "parts.change_partcategory"
     def get(self, request, pk):
         part_category = get_object_or_404(PartCategory, id=pk)
         form = PartCategoryModelForm(instance=part_category)
@@ -110,7 +120,8 @@ class PartCategoryUpdateView(View):
         }            
         return render(request, "parts/category-update.html", context)
 
-class PartCategoryDeleteView(View):
+class PartCategoryDeleteView(LoginRequiredMixin, PermissionRequiredMixin, View):
+    permission_required = "parts.delete_partcategory"
     def post(self, request, pk):
         part_category = get_object_or_404(PartCategory, id=pk)
         part_category.delete()
