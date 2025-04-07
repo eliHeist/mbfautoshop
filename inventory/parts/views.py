@@ -62,6 +62,14 @@ class PartDeleteView(LoginRequiredMixin, PermissionRequiredMixin, View):
         return redirect("parts:list")
 
 
+class PartQuantitySyncView(LoginRequiredMixin, PermissionRequiredMixin, View):
+    permission_required = "parts.change_part"
+    def get(self, request, pk):
+        part = get_object_or_404(Part, id=pk)
+        part.sync_quantity()
+        return redirect(reverse_lazy("parts:detail", kwargs={"pk": part.pk}))
+
+
 
 
 class PartCategoryListView(LoginRequiredMixin, PermissionRequiredMixin, View):

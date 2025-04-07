@@ -1,0 +1,67 @@
+{% load widget_tweaks %}
+
+<c-layout title="Stock in {{ part.name }}">
+    <div class="items-center flex flex-wrap justify-between mb-3">
+        <div class="breadcrumbs text-sm">
+            <ul>
+              <li><a>Inventory</a></li>
+              <li><a href="{% url 'parts:list' %}">Parts</a></li>
+              <li><a href="{% url 'parts:detail' part.pk %}">{{ part.name }}</a></li>
+              <li><a>Restock</a></li>
+            </ul>
+        </div>
+        <!-- <ul class="menu menu-vertical lg:menu-horizontal bg-base-100 rounded-box">
+            <li>
+                <a>Add Category</a>
+            </li>
+        </ul> -->
+    </div>
+    <div class="grid">
+        <form action="" method="post" class="grid sm:grid-cols-2 gap-y-2 gap-x-4 max-w-xl mx-auto">
+            {% csrf_token %}
+            <fieldset class="fieldset hidden">
+                <legend class="fieldset-legend">Part *</legend>
+                {{ form.part|add_class:"select w-full"|attr:"readonly" }}
+                <p class="fieldset-label">{{ form.part.help_text }}</p>
+                <ul class="errors grid">
+                    {% for error in form.part.errors %}
+                    <li class="text-error">{{ error }}</li>
+                    {% endfor %}
+                </ul>
+            </fieldset>
+            <fieldset class="fieldset">
+                <legend class="fieldset-legend">Quantity *</legend>
+                {{ form.quantity|add_class:"input w-full" }}
+                <p class="fieldset-label">{{ form.quantity.help_text }}</p>
+                <ul class="errors grid">
+                    {% for error in form.quantity.errors %}
+                    <li class="text-error">{{ error }}</li>
+                    {% endfor %}
+                </ul>
+            </fieldset>
+            <fieldset class="fieldset">
+                <legend class="fieldset-legend">Date *</legend>
+                {{ form.date|add_class:"input w-full"|attr:"type:date" }}
+                <p class="fieldset-label">{{ form.date.help_text }}</p>
+                <ul class="errors grid">
+                    {% for error in form.date.errors %}
+                    <li class="text-error">{{ error }}</li>
+                    {% endfor %}
+                </ul>
+            </fieldset>
+            <fieldset class="fieldset sm:col-span-2">
+                <legend class="fieldset-legend">Remarks</legend>
+                {{ form.remarks|add_class:"textarea w-full" }}
+                <p class="fieldset-label">{{ form.remarks.help_text }}</p>
+                <ul class="errors grid">
+                    {% for error in form.remarks.errors %}
+                    <li class="text-error">{{ error }}</li>
+                    {% endfor %}
+                </ul>
+            </fieldset>
+            <div class="sm:col-span-2 grid">
+                <button type="submit" class="btn btn-success">Restock</button>
+            </div>
+        </form>
+    </div>
+</c-layout>

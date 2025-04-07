@@ -11,6 +11,14 @@
           </div>
         <ul class="menu menu-vertical lg:menu-horizontal bg-base-100 rounded-box">
             <li>
+                <a href="{% url 'stock:restock' part.pk %}">Restock</a>
+            </li>
+            {% if request.user.is_superuser %}
+            <li>
+                <a href="{% url 'parts:quantity_sync' part.pk %}">Quantity Sync</a>
+            </li>
+            {% endif %}
+            <li>
                 <a href="{% url 'parts:update' part.pk %}">Update</a>
             </li>
         </ul>

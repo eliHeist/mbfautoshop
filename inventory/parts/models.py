@@ -34,3 +34,14 @@ class Part(models.Model):
     
     def get_stock(self):
         return self.stock_quantity
+    
+    def sync_quantity(self):
+        # get all stock transactions for this part
+        stock_in = self.stock_transactions.filter(transaction_type='IN').aggregate(models.Sum('quantity'))['quantity__sum'] or 0
+        stock_out = self.stock_transactions.filter(transaction_type='OUT').aggregate(models.Sum('quantity'))['quantity__sum'] or 0
+
+        print(f"\nStock IN: {stock_in}")
+        print(f"\nStock OUT: {stock_out}")
+        
+        self.stock_quantity = stock_in - stock_out
+        self.save()

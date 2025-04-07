@@ -10,6 +10,7 @@ urlpatterns = [
     path("<int:pk>/", views.PartDetailView.as_view(), name="detail"),
     path("<int:pk>/update/", views.PartUpdateView.as_view(), name="update"),
     path("<int:pk>/delete/", views.PartDeleteView.as_view(), name="delete"),
+    path("<int:pk>/quantity_sync/", views.PartQuantitySyncView.as_view(), name="quantity_sync"),
     
     path("categories/", views.PartCategoryListView.as_view(), name="category-list"),
     path("categories/create/", views.PartCategoryCreateView.as_view(), name="category-create"),
