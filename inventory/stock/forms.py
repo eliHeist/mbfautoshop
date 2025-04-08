@@ -1,4 +1,5 @@
 from django import forms
+
 from .models import StockIn, StockOut, StockTransaction
 
 
@@ -18,3 +19,11 @@ class StockOutForm(forms.ModelForm):
     class Meta:
         model = StockOut
         fields = ['part', 'quantity', 'date', 'remarks']
+
+
+StockInTransactionFormSet = forms.modelformset_factory(
+    StockIn,
+    fields=['part', 'quantity', 'date', 'remarks'], 
+    extra=1,  # Add 1 empty form by default
+    can_delete=True
+)
