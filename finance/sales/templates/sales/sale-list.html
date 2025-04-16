@@ -1,0 +1,45 @@
+<c-layout title="Sales">
+    <div class="items-center flex flex-wrap justify-between mb-3">
+        <div class="breadcrumbs text-sm">
+            <ul>
+                <li><a>Sales</a></li>
+            </ul>
+        </div>
+        <ul class="menu menu-horizontal bg-base-100 rounded-box">
+            <li>
+                <a href="{% url 'sales:create' %}">Add a Sale</a>
+            </li>
+        </ul>
+    </div>
+    <section>
+        <div></div>
+        <div>
+            <ul class="list bg-base-100 rounded-box shadow-md">
+
+                <li class="p-4 pb-2 text-xs opacity-60 tracking-wide">Recent sales</li>
+
+                {% for sale in sales %}
+                <li class="list-row">
+                    <div>
+                        <div>{{ sale.getTotal }}</div>
+                        <div class="text-xs uppercase font-semibold opacity-60">{{ sale.date }}</div>
+                    </div>
+                    <a href="#" class="btn btn-square btn-ghost">
+                        <svg class="size-[1.2em]" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+                            <g stroke-linejoin="round" stroke-linecap="round" stroke-width="2" fill="none"
+                                stroke="currentColor">
+                                <path d="M6 3L20 12 6 21 6 3z"></path>
+                            </g>
+                        </svg>
+                    </a>
+                </li>
+                {% empty %}
+                <li class="list-row">
+                    <p>No Sales yet</p>
+                </li>
+                {% endfor %}
+
+            </ul>
+        </div>
+    </section>
+</c-layout>

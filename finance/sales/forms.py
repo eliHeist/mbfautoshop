@@ -1,16 +1,17 @@
 from .models import Sale, SaleItem
-from django.forms import ModelForm, inlineformset_factory
+from django import forms
 
 
-class SaleModelForm(ModelForm):
+class SaleModelForm(forms.ModelForm):
     class Meta:
         model = Sale
         fields = '__all__'
 
 
-class SaleItemModelForm(ModelForm):
+class SaleItemModelForm(forms.ModelForm):
     class Meta:
         model = SaleItem
         fields = '__all__'
 
 
+sale_item_formset = forms.inlineformset_factory(Sale, SaleItem, fields='__all__')

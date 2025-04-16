@@ -1,0 +1,36 @@
+{% load widget_tweaks %}
+
+<c-layout title="Sale create">
+    <div class="items-center flex flex-wrap justify-between mb-3">
+        <div class="breadcrumbs text-sm">
+            <ul>
+                <li><a href="{% url 'sales:list' %}">Sales</a></li>
+                <li><a>Create a sale</a></li>
+            </ul>
+        </div>
+        <ul class="menu menu-horizontal bg-base-100 rounded-box">
+            <!-- <li>
+                <a href="{% url 'sales:create' %}">Add a Sale</a>
+            </li> -->
+        </ul>
+    </div>
+    <section>
+        <div>
+            <form method="post">
+                {% csrf_token %}
+                <div>
+                    <fieldset class="fieldset">
+                        <legend class="fieldset-legend">Quantity *</legend>
+                        {{ form.quantity|add_class:"input w-full" }}
+                        <p class="fieldset-label">{{ form.quantity.help_text }}</p>
+                        <ul class="errors grid">
+                            {% for error in form.quantity.errors %}
+                            <li class="text-error">{{ error }}</li>
+                            {% endfor %}
+                        </ul>
+                    </fieldset>
+                </div>
+            </form>
+        </div>
+    </section>
+</c-layout>

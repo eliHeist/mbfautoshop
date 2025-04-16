@@ -46,6 +46,7 @@ INSTALLED_APPS.append('django_cleanup.apps.CleanupConfig')
 
 MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
+    "whitenoise.middleware.WhiteNoiseMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
     "django.middleware.common.CommonMiddleware",
     "django.middleware.csrf.CsrfViewMiddleware",
@@ -143,7 +144,7 @@ STATICFILES_DIRS = [
     os.path.join(BASE_DIR, 'mbf_auto_shop/assets/static/dist/'),
     os.path.join(BASE_DIR, 'mbf_auto_shop/assets/assets/'),
 ]
-STATIC_ROOT = os.path.join(BASE_DIR, 'mbf_auto_shop/assets/staticfiles')
+STATIC_ROOT = BASE_DIR, 'mbf_auto_shop/assets/staticfiles'
 
 MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'mbf_auto_shop/assets/media')
@@ -164,3 +165,9 @@ EMAIL_HOST_USER = env('EMAIL_HOST_USER')
 EMAIL_HOST_PASSWORD = env('EMAIL_HOST_PASSWORD')
 DEFAULT_FROM_EMAIL = env('DEFAULT_FROM_EMAIL')
 TO_EMAILS = env.list('TO_EMAILS')
+
+STORAGES = {
+    "staticfiles": {
+        "BACKEND": "whitenoise.storage.CompressedManifestStaticFilesStorage",
+    },
+}

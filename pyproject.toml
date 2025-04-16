@@ -14,4 +14,5 @@ dependencies = [
     "django-widget-tweaks>=1.5.0",
     "djangosetupheist==0.6.2",
     "pillow>=11.1.0",
+    "whitenoise>=6.9.0",
 ]

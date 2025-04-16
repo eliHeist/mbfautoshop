@@ -1,21 +1,34 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.views import View
 from .models import Sale, SaleItem
-from .forms import SaleModelForm
+from .forms import SaleModelForm, sale_item_formset
 
 class SaleListView(View):
     def get(self, request):
         sales = Sale.objects.all()
-        return render(request, "sales/sale_list.html", {"sales": sales})
+        return render(request, "sales/sale-list.html", {"sales": sales})
 
 class SaleCreateView(View):
     def get(self, request):
         form = SaleModelForm()
-        return render(request, "sales/sale_form.html", {"form": form})
+        formset = sale_item_formset()
+        
+        context = {
+            "form": form,
+            "formset": formset,
+        }
+        template_name = 'sales/sale-create.html'
+        return render(request, template_name, context)
 
     def post(self, request):
         form = SaleModelForm(request.POST)
-        if form.is_valid():
+        formset = sale_item_formset(request.POST)
+        if form.is_valid() and formset.is_valid():
             form.save()
             return redirect("sales:list")
-        return render(request, "sales/sale_form.html", {"form": form})
+        context = {
+            "form": form,
+            "formset": formset,
+        }
+        template_name = 'sales/sale-create.html'
+        return render(request, template_name, context)
