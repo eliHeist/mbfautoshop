@@ -144,7 +144,7 @@ STATICFILES_DIRS = [
     os.path.join(BASE_DIR, 'mbf_auto_shop/assets/static/dist/'),
     os.path.join(BASE_DIR, 'mbf_auto_shop/assets/assets/'),
 ]
-STATIC_ROOT = BASE_DIR, 'mbf_auto_shop/assets/staticfiles'
+STATIC_ROOT = BASE_DIR / 'mbf_auto_shop/assets/staticfiles'
 
 MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'mbf_auto_shop/assets/media')
