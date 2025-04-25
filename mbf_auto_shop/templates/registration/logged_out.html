@@ -1,8 +1,7 @@
-{% extends '_base.html' %} {% load tailwind_filters static %}
+{% extends '__init__.html' %} {% load static %}
 
-{% block slot %}
-
-<main class="h-screen w-screen grid place-content-center p-4 dark:bg-grey-950 bg-white dark:text-white">
+{% block base %}
+<main class="h-screen w-screen grid place-content-center p-4 bg-base-100 text-base-content">
     <div class="max-w-lg w-full">
     
         <p>
@@ -14,4 +13,4 @@
     </div>
 </main>
 
-{% endblock slot %}
+{% endblock %}
