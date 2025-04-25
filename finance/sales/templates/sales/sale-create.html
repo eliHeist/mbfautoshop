@@ -1,6 +1,142 @@
 {% load widget_tweaks %}
 
 <c-layout title="Sale create">
+    <c-slot name="scripts">
+        <link href="https://cdn.jsdelivr.net/npm/tom-select@2.4.3/dist/css/tom-select.css" rel="stylesheet">
+        <script src="https://cdn.jsdelivr.net/npm/tom-select@2.4.3/dist/js/tom-select.complete.min.js"></script>
+        <script>
+            const saleDATA = {
+                items: [],
+                next_id: 0,
+                totalAmount: 0,
+                addItem() {
+                    let initial_template = this.$refs.blank_formset.innerHTML
+                    let template = initial_template.replace(/__prefix__/g, this.next_id)
+
+                    this.$refs.formsetContainer.insertAdjacentHTML('beforeend', template)
+                    this.next_id++
+
+                    const newForm = this.$refs.formsetContainer.lastElementChild
+                    this.addListenersForUpdatingPrices(newForm)
+                },
+                addTotalPrices(form) {
+                    if (form.querySelector('input.deletes_amount').checked) {
+                        return
+                    }
+
+                    let total = this.getFormTotal(form)
+
+                    const totalAmountField = form.querySelector('.price_div')
+
+                    totalAmountField.innerText = total.toLocaleString('en-US')
+
+                    this.updateGrandTotal()
+                },
+                removeFromTotal(form) { },
+                getFormTotal(form) {
+                    // get the quantity and price inputs respecutively
+                    const inputs = form.querySelectorAll('input.affects_amount')
+                    const quantity = Number(inputs[0].value)
+                    const price = Number(inputs[1].value)
+                    const totalAmount = quantity * price
+
+                    if (!totalAmount) { return 0 }
+
+                    return totalAmount
+                },
+                updateGrandTotal() {
+                    const price_divs = this.$refs.formsetContainer.querySelectorAll('.formSetItem:not(.deleted) .price_div')
+
+
+                    let total = 0
+
+                    price_divs.forEach(div => {
+                        const amount = div.innerText.replace(',', '')
+                        total += Number(amount)
+                    })
+
+                    this.totalAmount = total
+                },
+                addListenersForUpdatingPrices(form) {
+                    form.querySelectorAll('input.affects_amount').forEach(input => {
+                        input.addEventListener('change', (event) => {
+                            this.addTotalPrices(form)
+                        })
+                    });
+
+                    const deleteInput = form.querySelector('input.deletes_amount')
+
+                    deleteInput.addEventListener('change', (event) => {
+                        console.log(deleteInput.checked)
+                        if (deleteInput.checked) {
+                            form.classList.add('deleted')
+                            form.classList.add('opacity-50')
+                        } else {
+                            form.classList.remove('deleted')
+                            form.classList.remove('opacity-50')
+                        }
+                        this.updateGrandTotal()
+                    })
+                },
+                setExpiryDate(new_date) {
+                    // set expiry date to be 14 days from issue date
+                    let date = new Date(new_date).setDate(new Date(new_date).getDate() + 14)
+                    // convert date to yyyy-mm-dd
+                    let expiry_date = new Date(date).toISOString().split('T')[0]
+                    // get expiry field
+                    this.$refs.expiry_date.value = expiry_date
+                },
+                goTo(index) {
+                    const indicators = document.querySelectorAll('#indicators .step')
+                    const carouselItems = document.querySelectorAll('.carousel.main .carousel-item')
+                    
+                    for (let i = 0; i < carouselItems.length; i++) {
+                        const carousel_item = carouselItems[i];
+                        const indicator = indicators[i]
+
+                        if (i == index) {
+                            // scroll the item into view
+                            carousel_item.scrollIntoView({
+                                behavior: 'smooth',
+                                inline: 'center'
+                            })
+                        }
+
+                        // change to active step
+                        if (i <= index) {
+                            if (!indicator.classList.contains('step-neutral')) {
+                                indicator.classList.add('step-neutral')
+                            }
+                        } else {
+                            if (indicator.classList.contains('step-neutral')) {
+                                indicator.classList.remove('step-neutral')
+                            }
+                        }
+                    }
+                },
+                init() {
+                    // get the last div element for in the formset-container
+                    const lastDiv = this.$refs.formsetContainer.lastElementChild;
+                    // now find the first input element inside the first fieldset element
+                    const firstInput = lastDiv.querySelector('input');
+                    // items-0-id is its id, extract the 0 as a number
+                    let last_id = Number(firstInput.id.split('-')[1]);
+
+                    this.next_id = last_id + 1
+
+                    // for each of the forms watch for price changes
+                    let formsets = this.$refs.formsetContainer.children
+
+                    for (const formset in formsets) {
+                        if (Object.prototype.hasOwnProperty.call(formsets, formset)) {
+                            const element = formsets[formset];
+                            this.addListenersForUpdatingPrices(element)
+                        }
+                    }
+                }
+            }
+        </script>
+    </c-slot>
     <div class="items-center flex flex-wrap justify-between mb-3">
         <div class="breadcrumbs text-sm">
             <ul>
@@ -14,23 +150,182 @@
             </li> -->
         </ul>
     </div>
-    <section>
+    <section x-data="saleDATA">
         <div>
+            <div class="grid justify-center">
+                <ul class="steps" id="indicators">
+                    <li class="step step-neutral">Basic Info</li>
+                    <li class="step">Items</li>
+                    <li class="step">Finance</li>
+                    <li class="step">Finalize</li>
+                </ul>
+            </div>
             <form method="post">
                 {% csrf_token %}
-                <div>
-                    <fieldset class="fieldset">
-                        <legend class="fieldset-legend">Quantity *</legend>
-                        {{ form.quantity|add_class:"input w-full" }}
-                        <p class="fieldset-label">{{ form.quantity.help_text }}</p>
-                        <ul class="errors grid">
-                            {% for error in form.quantity.errors %}
-                            <li class="text-error">{{ error }}</li>
-                            {% endfor %}
-                        </ul>
-                    </fieldset>
+                <div class="carousel main rounded-box w-full">
+                    <div class="carousel-item w-full">
+                        <div class="w-full max-w-xl p-1.5 mx-auto">
+                            <fieldset class="fieldset">
+                                <legend class="fieldset-legend">Date *</legend>
+                                {{ form.date|add_class:"input w-full"|attr:"type:date" }}
+                                <p class="fieldset-label">{{ form.date.help_text }}</p>
+                                <ul class="errors grid">
+                                    {% for error in form.date.errors %}
+                                    <li class="text-error">{{ error }}</li>
+                                    {% endfor %}
+                                </ul>
+                            </fieldset>
+                            <fieldset class="fieldset">
+                                <legend class="fieldset-legend">Comments *</legend>
+                                {{ form.comments|add_class:"textarea w-full" }}
+                                <p class="fieldset-label">{{ form.comments.help_text }}</p>
+                                <ul class="errors grid">
+                                    {% for error in form.comments.errors %}
+                                    <li class="text-error">{{ error }}</li>
+                                    {% endfor %}
+                                </ul>
+                            </fieldset>
+                            <div class="flex gap-3">
+                                <button type="button" class="btn btn-soft btn-neutral" @click="goTo(1)">
+                                    Next
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"
+                                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                                        stroke-linejoin="round" class="lucide lucide-move-right-icon lucide-move-right">
+                                        <path d="M18 8L22 12L18 16" />
+                                        <path d="M2 12H22" />
+                                    </svg>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="carousel-item w-full">
+                        <div class="formset grid justify-center">
+                            <input type="hidden" name="items-TOTAL_FORMS" x-model="next_id">
+                            <input type="hidden" name="items-INITIAL_FORMS" value="{{ formset.initial_form_count }}">
+                            <input type="hidden" name="items-MIN_NUM_FORMS" value="1">
+                            <input type="hidden" name="items-MAX_NUM_FORMS" value="1000">
+
+                            <div id="formset-container" class="grid gap-y-8" x-ref="formsetContainer">
+                                {% for form in formset %}
+                                <div class="formsetItem" x-data="">
+                                    <fieldset class="fieldset">
+                                        <legend class="fieldset-legend">Part *</legend>
+                                        {{ form.part|add_class:"w-full tom-select" }}
+                                        <p class="fieldset-label">{{ form.part.help_text }}</p>
+                                        <ul class="errors grid">
+                                            {% for error in form.part.errors %}
+                                            <li class="text-error">{{ error }}</li>
+                                            {% endfor %}
+                                        </ul>
+                                    </fieldset>
+                                    <fieldset class="fieldset">
+                                        <legend class="fieldset-legend">Unit Price *</legend>
+                                        {{ form.unit_price|add_class:"input affects_amount w-full"|attr:"type:number" }}
+                                        <p class="fieldset-label">{{ form.unit_price.help_text }}</p>
+                                        <p class="fieldset-label price_div"></p>
+                                        <ul class="errors grid">
+                                            {% for error in form.unit_price.errors %}
+                                            <li class="text-error">{{ error }}</li>
+                                            {% endfor %}
+                                        </ul>
+                                    </fieldset>
+                                    <fieldset class="fieldset">
+                                        <legend class="fieldset-legend">Quantity *</legend>
+                                        {{ form.quantity|add_class:"input affects_amount w-full"|attr:"type:number" }}
+                                        <p class="fieldset-label">{{ form.quantity.help_text }}</p>
+                                        <ul class="errors grid">
+                                            {% for error in form.quantity.errors %}
+                                            <li class="text-error">{{ error }}</li>
+                                            {% endfor %}
+                                        </ul>
+                                    </fieldset>
+                                    <fieldset class="fieldset col-span-2 sm:col-span-1">
+                                        <legend class="fieldset-legend">Delete</legend>
+                                        {{ form.DELETE|add_class:"checkbox checkbox-xl deletes_amount" }}
+                                    </fieldset>
+                                </div>
+                                {% endfor %}
+                            </div>
+
+                            <div class="flex gap-3">
+                                <button class="btn btn-neutral mb-2" type="button" @click="addItem()">
+                                    Add Item
+                                </button>
+                                <button type="button" class="btn btn-soft btn-neutral" @click="goTo(0)">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"
+                                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                                        stroke-linejoin="round" class="rotate-180">
+                                        <path d="M18 8L22 12L18 16" />
+                                        <path d="M2 12H22" />
+                                    </svg>
+                                    Previous
+                                </button>
+                                <button type="button" class="btn btn-soft btn-neutral" @click="goTo(2)">
+                                    Next
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"
+                                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                                        stroke-linejoin="round" class="lucide lucide-move-right-icon lucide-move-right">
+                                        <path d="M18 8L22 12L18 16" />
+                                        <path d="M2 12H22" />
+                                    </svg>
+                                </button>
+                            </div>
+
+                            <template x-ref="blank_formset">
+                                {% with form=formset.empty_form %}
+                                <div class="formsetItem">
+                                    <fieldset class="fieldset">
+                                        <legend class="fieldset-legend">Part *</legend>
+                                        {{ form.part|add_class:"w-full tom-select" }}
+                                        <p class="fieldset-label">{{ form.part.help_text }}</p>
+                                        <ul class="errors grid">
+                                            {% for error in form.part.errors %}
+                                            <li class="text-error">{{ error }}</li>
+                                            {% endfor %}
+                                        </ul>
+                                    </fieldset>
+                                    <fieldset class="fieldset">
+                                        <legend class="fieldset-legend">Unit Price *</legend>
+                                        {{ form.unit_price|add_class:"input w-full" }}
+                                        <p class="fieldset-label">{{ form.unit_price.help_text }}</p>
+                                        <ul class="errors grid">
+                                            {% for error in form.unit_price.errors %}
+                                            <li class="text-error">{{ error }}</li>
+                                            {% endfor %}
+                                        </ul>
+                                    </fieldset>
+                                    <fieldset class="fieldset">
+                                        <legend class="fieldset-legend">Quantity *</legend>
+                                        {{ form.quantity|add_class:"input w-full" }}
+                                        <p class="fieldset-label">{{ form.quantity.help_text }}</p>
+                                        <ul class="errors grid">
+                                            {% for error in form.quantity.errors %}
+                                            <li class="text-error">{{ error }}</li>
+                                            {% endfor %}
+                                        </ul>
+                                    </fieldset>
+                                    <fieldset class="fieldset col-span-2 sm:col-span-1">
+                                        <legend class="fieldset-legend">Delete</legend>
+                                        {{ form.DELETE|add_class:"checkbox checkbox-xl deletes_amount" }}
+                                    </fieldset>
+                                </div>
+                                {% endwith %}
+                            </template>
+                        </div>
+                    </div>
                 </div>
+
             </form>
         </div>
     </section>
+
+    <script>
+        new TomSelect("select.tom-select", {
+            create: false,
+            sortField: {
+                field: "text",
+                direction: "asc"
+            }
+        });
+    </script>
 </c-layout>

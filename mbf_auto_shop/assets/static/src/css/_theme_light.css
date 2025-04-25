@@ -3,9 +3,9 @@
     default: true;
     prefersdark: false;
     color-scheme: "light";
-  
+
     --color-base-100: oklch(100% 0 0); /* #ffffff */
-    --color-base-200: oklch(94% 0.007 95); /* #f1f1e7 */
+    --color-base-200: oklch(99% 0.007 95); /* #f1f1e7 */
     --color-base-300: oklch(94% 0.007 95); /* #f4f4ec */
     --color-base-content: oklch(22% 0.005 278); /* #34332f */
   
