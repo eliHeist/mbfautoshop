@@ -14,7 +14,7 @@ class SaleItemModelForm(forms.ModelForm):
 
     class Meta:
         model = SaleItem
-        fields = ['sale', 'part', 'unit_price', 'quantity']
+        fields = ['sale', 'part', 'quantity']
     
     def save(self, commit=True):
         sale_item = super().save(commit=False)
@@ -46,4 +46,4 @@ class SaleItemModelForm(forms.ModelForm):
         return sale_item
 
 
-sale_item_formset = forms.inlineformset_factory(Sale, SaleItem, form=SaleItemModelForm, fields='__all__', extra=1)
+sale_item_formset = forms.inlineformset_factory(Sale, SaleItem, form=SaleItemModelForm, fields=['sale', 'part', 'quantity'], extra=1)

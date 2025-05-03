@@ -152,21 +152,23 @@
     </div>
     <section x-data="saleDATA">
         <div>
-            <div class="grid justify-center">
+            <!-- <div class="grid justify-center">
                 <ul class="steps" id="indicators">
                     <li class="step step-neutral">Basic Info</li>
                     <li class="step">Items</li>
                     <li class="step">Finance</li>
                     <li class="step">Finalize</li>
                 </ul>
-            </div>
-            <form method="post">
+            </div> -->
+            <form method="post @container">
                 {% csrf_token %}
-                <div class="carousel main rounded-box w-full">
-                    <div class="carousel-item w-full">
-                        <div class="w-full max-w-xl p-1.5 mx-auto">
+
+                <div class="grid gap-4">
+                    <div class="grid gap-4">
+                        <div class="w-full">
+                            <h3 class="text-2xl mb-4">Sale Details</h3>
                             <fieldset class="fieldset">
-                                <legend class="fieldset-legend">Date *</legend>
+                                <legend class="fieldset-legend">Sale Date *</legend>
                                 {{ form.date|add_class:"input w-full"|attr:"type:date" }}
                                 <p class="fieldset-label">{{ form.date.help_text }}</p>
                                 <ul class="errors grid">
@@ -176,7 +178,7 @@
                                 </ul>
                             </fieldset>
                             <fieldset class="fieldset">
-                                <legend class="fieldset-legend">Comments *</legend>
+                                <legend class="fieldset-legend">Sale Comments</legend>
                                 {{ form.comments|add_class:"textarea w-full" }}
                                 <p class="fieldset-label">{{ form.comments.help_text }}</p>
                                 <ul class="errors grid">
@@ -185,32 +187,94 @@
                                     {% endfor %}
                                 </ul>
                             </fieldset>
-                            <div class="flex gap-3">
-                                <button type="button" class="btn btn-soft btn-neutral" @click="goTo(1)">
-                                    Next
-                                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"
-                                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
-                                        stroke-linejoin="round" class="lucide lucide-move-right-icon lucide-move-right">
-                                        <path d="M18 8L22 12L18 16" />
-                                        <path d="M2 12H22" />
-                                    </svg>
-                                </button>
-                            </div>
                         </div>
+                        {% with form=payment_form %}
+                        <div class="w-full">
+                            <h3 class="text-2xl mb-4">Payment Details</h3>
+                            <fieldset class="fieldset">
+                                <legend class="fieldset-legend">Payment Date *</legend>
+                                {{ form.payment_date|add_class:"input w-full" }}
+                                <p class="fieldset-label">{{ form.payment_date.help_text }}</p>
+                                <ul class="errors grid">
+                                    {% for error in form.payment_date.errors %}
+                                    <li class="text-error">{{ error }}</li>
+                                    {% endfor %}
+                                </ul>
+                            </fieldset>
+                            <fieldset class="fieldset">
+                                <legend class="fieldset-legend">Payment Method *</legend>
+                                {{ form.method|add_class:"select w-full" }}
+                                <p class="fieldset-label">{{ form.method.help_text }}</p>
+                                <ul class="errors grid">
+                                    {% for error in form.method.errors %}
+                                    <li class="text-error">{{ error }}</li>
+                                    {% endfor %}
+                                </ul>
+                            </fieldset>
+                            <fieldset class="fieldset">
+                                <legend class="fieldset-legend">Payment Amount *</legend>
+                                {{ form.amount|add_class:"input w-full" }}
+                                <p class="fieldset-label">{{ form.amount.help_text }}</p>
+                                <ul class="errors grid">
+                                    {% for error in form.amount.errors %}
+                                    <li class="text-error">{{ error }}</li>
+                                    {% endfor %}
+                                </ul>
+                            </fieldset>
+                        </div>
+                        {% endwith %}
                     </div>
-                    <div class="carousel-item w-full">
-                        <div class="formset grid justify-center">
+                    <div>
+                        <h3 class="text-2xl mb-4">Parts</h3>
+                        <div class="formset grid">
                             <input type="hidden" name="items-TOTAL_FORMS" x-model="next_id">
                             <input type="hidden" name="items-INITIAL_FORMS" value="{{ formset.initial_form_count }}">
                             <input type="hidden" name="items-MIN_NUM_FORMS" value="1">
                             <input type="hidden" name="items-MAX_NUM_FORMS" value="1000">
-
+    
                             <div id="formset-container" class="grid gap-y-8" x-ref="formsetContainer">
                                 {% for form in formset %}
+                                <div class="formsetItem" x-data="{}">
+                                    <fieldset class="fieldset">
+                                        <legend class="fieldset-legend">Part *</legend>
+                                        {{ form.part|add_class:"w-full select" }}
+                                        <p class="fieldset-label">{{ form.part.help_text }}</p>
+                                        <ul class="errors grid">
+                                            {% for error in form.part.errors %}
+                                            <li class="text-error">{{ error }}</li>
+                                            {% endfor %}
+                                        </ul>
+                                    </fieldset>
+                                    <fieldset class="fieldset">
+                                        <legend class="fieldset-legend">Quantity *</legend>
+                                        {{ form.quantity|add_class:"input affects_amount w-full"|attr:"type:number" }}
+                                        <p class="fieldset-label">{{ form.quantity.help_text }}</p>
+                                        <ul class="errors grid">
+                                            {% for error in form.quantity.errors %}
+                                            <li class="text-error">{{ error }}</li>
+                                            {% endfor %}
+                                        </ul>
+                                    </fieldset>
+                                    <fieldset class="fieldset col-span-2 sm:col-span-1">
+                                        <legend class="fieldset-legend">Delete</legend>
+                                        {{ form.DELETE|add_class:"checkbox checkbox-xl deletes_amount" }}
+                                    </fieldset>
+                                </div>
+                                {% endfor %}
+                            </div>
+    
+                            <div class="flex justify-end gap-3">
+                                <button class="btn btn-outline btn-neutral mb-2" type="button" @click="addItem()">
+                                    Add Item
+                                </button>
+                            </div>
+    
+                            <template x-ref="blank_formset">
+                                {% with form=formset.empty_form %}
                                 <div class="formsetItem" x-data="">
                                     <fieldset class="fieldset">
                                         <legend class="fieldset-legend">Part *</legend>
-                                        {{ form.part|add_class:"w-full tom-select" }}
+                                        {{ form.part|add_class:"w-full select" }}
                                         <p class="fieldset-label">{{ form.part.help_text }}</p>
                                         <ul class="errors grid">
                                             {% for error in form.part.errors %}
@@ -244,75 +308,14 @@
                                         {{ form.DELETE|add_class:"checkbox checkbox-xl deletes_amount" }}
                                     </fieldset>
                                 </div>
-                                {% endfor %}
-                            </div>
-
-                            <div class="flex gap-3">
-                                <button class="btn btn-neutral mb-2" type="button" @click="addItem()">
-                                    Add Item
-                                </button>
-                                <button type="button" class="btn btn-soft btn-neutral" @click="goTo(0)">
-                                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"
-                                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
-                                        stroke-linejoin="round" class="rotate-180">
-                                        <path d="M18 8L22 12L18 16" />
-                                        <path d="M2 12H22" />
-                                    </svg>
-                                    Previous
-                                </button>
-                                <button type="button" class="btn btn-soft btn-neutral" @click="goTo(2)">
-                                    Next
-                                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"
-                                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
-                                        stroke-linejoin="round" class="lucide lucide-move-right-icon lucide-move-right">
-                                        <path d="M18 8L22 12L18 16" />
-                                        <path d="M2 12H22" />
-                                    </svg>
-                                </button>
-                            </div>
-
-                            <template x-ref="blank_formset">
-                                {% with form=formset.empty_form %}
-                                <div class="formsetItem">
-                                    <fieldset class="fieldset">
-                                        <legend class="fieldset-legend">Part *</legend>
-                                        {{ form.part|add_class:"w-full tom-select" }}
-                                        <p class="fieldset-label">{{ form.part.help_text }}</p>
-                                        <ul class="errors grid">
-                                            {% for error in form.part.errors %}
-                                            <li class="text-error">{{ error }}</li>
-                                            {% endfor %}
-                                        </ul>
-                                    </fieldset>
-                                    <fieldset class="fieldset">
-                                        <legend class="fieldset-legend">Unit Price *</legend>
-                                        {{ form.unit_price|add_class:"input w-full" }}
-                                        <p class="fieldset-label">{{ form.unit_price.help_text }}</p>
-                                        <ul class="errors grid">
-                                            {% for error in form.unit_price.errors %}
-                                            <li class="text-error">{{ error }}</li>
-                                            {% endfor %}
-                                        </ul>
-                                    </fieldset>
-                                    <fieldset class="fieldset">
-                                        <legend class="fieldset-legend">Quantity *</legend>
-                                        {{ form.quantity|add_class:"input w-full" }}
-                                        <p class="fieldset-label">{{ form.quantity.help_text }}</p>
-                                        <ul class="errors grid">
-                                            {% for error in form.quantity.errors %}
-                                            <li class="text-error">{{ error }}</li>
-                                            {% endfor %}
-                                        </ul>
-                                    </fieldset>
-                                    <fieldset class="fieldset col-span-2 sm:col-span-1">
-                                        <legend class="fieldset-legend">Delete</legend>
-                                        {{ form.DELETE|add_class:"checkbox checkbox-xl deletes_amount" }}
-                                    </fieldset>
-                                </div>
                                 {% endwith %}
                             </template>
                         </div>
                     </div>
+                </div>
+
+                <div class="form-actions">
+                    <button class="btn btn-primary" type="submit">Save</button>
                 </div>
 
             </form>

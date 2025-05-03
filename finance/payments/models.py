@@ -18,10 +18,11 @@ class Payment(models.Model):
     method = models.ForeignKey(PaymentMethod, on_delete=models.SET_NULL, null=True, blank=True)
     amount = models.DecimalField(max_digits=10, decimal_places=2)
     date_added = models.DateTimeField(auto_now_add=True)
-    date = models.DateTimeField()
+    date = models.DateField()
 
     def __str__(self):
-        return f"Payment {self.id} - UGX {self.amount} for Sale {self.sale.id}"
+        return f"Payment {self.pk} - UGX {self.amount}"
+    
 
 
 # model manager for Income
