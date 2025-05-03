@@ -1,6 +1,8 @@
 from django.urls import path, include
 
 app_configs = [
+	{ 'app_name': 'misc.api', 'url': 'misc/api/', 'namespace': 'xapi' },
+
 	{ 'app_name': 'finance.purchases', 'url': 'finance/purchases/', 'namespace': 'purchases' },
 
 	{ 'app_name': 'people.customers', 'url': 'people/customers/', 'namespace': 'customers' },

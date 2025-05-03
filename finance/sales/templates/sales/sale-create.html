@@ -160,10 +160,10 @@
                     <li class="step">Finalize</li>
                 </ul>
             </div> -->
-            <form method="post @container">
+            <form method="post @container/saleform">
                 {% csrf_token %}
 
-                <div class="grid gap-4">
+                <div class="grid gap-4 sm:grid-cols-2">
                     <div class="grid gap-4">
                         <div class="w-full">
                             <h3 class="text-2xl mb-4">Sale Details</h3>
@@ -226,6 +226,69 @@
                     </div>
                     <div>
                         <h3 class="text-2xl mb-4">Parts</h3>
+                        <div class="grid">
+                            <div class="search-box w-full group relative z-50" x-data="{
+                                search_text: '',
+                                show_search: false,
+                                parts: [],
+                                toggleSearch(){
+                                    this.show_search = true
+                    
+                                    document.addEventListener('click', (event) => {this.checkClick(event)})
+                                },
+                                checkClick(event){
+                                    let element = event.target
+                    
+                                    if (element.classList.contains('search-box')) {
+                                        this.show_search = false
+                                        document.removeEventListener('click', (event) => {this.checkClick(event)})
+                                    }
+                                    
+                                    while (!element.classList.contains('search-box')) {
+                                        if (element.tagName == 'BODY'){
+                                            this.show_search = false
+                                            document.removeEventListener('click', (event) => {this.checkClick(event)})
+                                            break
+                                        }
+                                        element = element.parentElement
+                                    }
+                                },
+                                async handleSearch(){
+                                    let form = this.$refs.search_form
+                                    if (this.search_text.length > 2) {
+                                        form.requestSubmit()
+                                    }
+                                },
+                                fetchParts(){
+                                    
+                                }
+                            }">
+                                <div class="search-field grid gap-2 bg-base-100 p-1 px-2 outline outline-base-300 w-full max-w-[600px] rounded-md mx-auto accent-primary" @click="toggleSearch()" x-ref="search_form">
+                                    <div class="grid [grid-template-columns:1fr_auto] items-center">
+                                        <input type="text" x-model="search_text" @keyup="handleSearch()"
+                                            class="focus-within:outline-0 focus:outline-0 outline-0">
+                                        <button
+                                            class="grid place-content-center p-2 transition-colors hover:bg-base-content hover:text-base-100 rounded-md">
+                                            <i class="fas fa-search"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                                <div class="absolute grid left-1/2 mt-2 rounded-md p-4 bg-base-100 outline outline-grey-400 dark:outline-grey-600 w-full max-w-[750px] max-h-[70vh] overflow-y-auto min-h-[10rem] -translate-x-1/2 shadow-lg transition-all -translate-y-1/2 opacity-0"
+                                    :class="show_search ? 'translate-y-0 opacity-100' : ''" x-cloak x-show="show_search" x-collapse
+                                    x-duration.300>
+                                    <div class="relative h-full">
+                                        <div class="hx-indicator hidden absolute inset-0 bg-white" id="loader">
+                                            <div class="aspect-square animate-spin grid place-content-center h-full w-full">
+                                                <i class="fas fa-circle-notch text-2xl"></i>
+                                            </div>
+                                        </div>
+                                        <div id="search_results">
+                                            <span class="m-auto">Search to show items</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
                         <div class="formset grid">
                             <input type="hidden" name="items-TOTAL_FORMS" x-model="next_id">
                             <input type="hidden" name="items-INITIAL_FORMS" value="{{ formset.initial_form_count }}">
