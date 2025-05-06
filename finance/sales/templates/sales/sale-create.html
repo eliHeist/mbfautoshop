@@ -2,137 +2,44 @@
 
 <c-layout title="Sale create">
     <c-slot name="scripts">
-        <link href="https://cdn.jsdelivr.net/npm/tom-select@2.4.3/dist/css/tom-select.css" rel="stylesheet">
-        <script src="https://cdn.jsdelivr.net/npm/tom-select@2.4.3/dist/js/tom-select.complete.min.js"></script>
         <script>
             const saleDATA = {
-                items: [],
-                next_id: 0,
-                totalAmount: 0,
-                addItem() {
-                    let initial_template = this.$refs.blank_formset.innerHTML
-                    let template = initial_template.replace(/__prefix__/g, this.next_id)
-
-                    this.$refs.formsetContainer.insertAdjacentHTML('beforeend', template)
-                    this.next_id++
-
-                    const newForm = this.$refs.formsetContainer.lastElementChild
-                    this.addListenersForUpdatingPrices(newForm)
+                parts: [],
+                added_parts: [],
+                add_mode: false,
+                sale: {
+                    date: '',
+                    payment_date: '',
+                    items: [],
                 },
-                addTotalPrices(form) {
-                    if (form.querySelector('input.deletes_amount').checked) {
+                async fetchParts(){
+                    const request = await fetch("{% url 'api:get_all_parts' %}")
+                    const response = await request.json()
+                    this.parts = response
+                },
+                addItem(part){
+                    if (this.added_parts.includes(part)){
                         return
                     }
 
-                    let total = this.getFormTotal(form)
+                    let item = {
+                        part: part,
+                        quantity: 1
+                    }
 
-                    const totalAmountField = form.querySelector('.price_div')
-
-                    totalAmountField.innerText = total.toLocaleString('en-US')
-
-                    this.updateGrandTotal()
+                    this.sale.items.push(item)
+                    this.added_parts.push(part)
                 },
-                removeFromTotal(form) { },
-                getFormTotal(form) {
-                    // get the quantity and price inputs respecutively
-                    const inputs = form.querySelectorAll('input.affects_amount')
-                    const quantity = Number(inputs[0].value)
-                    const price = Number(inputs[1].value)
-                    const totalAmount = quantity * price
-
-                    if (!totalAmount) { return 0 }
-
-                    return totalAmount
-                },
-                updateGrandTotal() {
-                    const price_divs = this.$refs.formsetContainer.querySelectorAll('.formSetItem:not(.deleted) .price_div')
-
-
-                    let total = 0
-
-                    price_divs.forEach(div => {
-                        const amount = div.innerText.replace(',', '')
-                        total += Number(amount)
+                removeItem(item){
+                    this.added_parts = this.added_parts.filter((value) => {
+                        value != item.part
                     })
-
-                    this.totalAmount = total
-                },
-                addListenersForUpdatingPrices(form) {
-                    form.querySelectorAll('input.affects_amount').forEach(input => {
-                        input.addEventListener('change', (event) => {
-                            this.addTotalPrices(form)
-                        })
-                    });
-
-                    const deleteInput = form.querySelector('input.deletes_amount')
-
-                    deleteInput.addEventListener('change', (event) => {
-                        console.log(deleteInput.checked)
-                        if (deleteInput.checked) {
-                            form.classList.add('deleted')
-                            form.classList.add('opacity-50')
-                        } else {
-                            form.classList.remove('deleted')
-                            form.classList.remove('opacity-50')
-                        }
-                        this.updateGrandTotal()
+                    this.sale.items = this.sale.items.filter((value) => {
+                        value != item
                     })
                 },
-                setExpiryDate(new_date) {
-                    // set expiry date to be 14 days from issue date
-                    let date = new Date(new_date).setDate(new Date(new_date).getDate() + 14)
-                    // convert date to yyyy-mm-dd
-                    let expiry_date = new Date(date).toISOString().split('T')[0]
-                    // get expiry field
-                    this.$refs.expiry_date.value = expiry_date
-                },
-                goTo(index) {
-                    const indicators = document.querySelectorAll('#indicators .step')
-                    const carouselItems = document.querySelectorAll('.carousel.main .carousel-item')
-                    
-                    for (let i = 0; i < carouselItems.length; i++) {
-                        const carousel_item = carouselItems[i];
-                        const indicator = indicators[i]
-
-                        if (i == index) {
-                            // scroll the item into view
-                            carousel_item.scrollIntoView({
-                                behavior: 'smooth',
-                                inline: 'center'
-                            })
-                        }
-
-                        // change to active step
-                        if (i <= index) {
-                            if (!indicator.classList.contains('step-neutral')) {
-                                indicator.classList.add('step-neutral')
-                            }
-                        } else {
-                            if (indicator.classList.contains('step-neutral')) {
-                                indicator.classList.remove('step-neutral')
-                            }
-                        }
-                    }
-                },
-                init() {
-                    // get the last div element for in the formset-container
-                    const lastDiv = this.$refs.formsetContainer.lastElementChild;
-                    // now find the first input element inside the first fieldset element
-                    const firstInput = lastDiv.querySelector('input');
-                    // items-0-id is its id, extract the 0 as a number
-                    let last_id = Number(firstInput.id.split('-')[1]);
-
-                    this.next_id = last_id + 1
-
-                    // for each of the forms watch for price changes
-                    let formsets = this.$refs.formsetContainer.children
-
-                    for (const formset in formsets) {
-                        if (Object.prototype.hasOwnProperty.call(formsets, formset)) {
-                            const element = formsets[formset];
-                            this.addListenersForUpdatingPrices(element)
-                        }
-                    }
+                init(){
+                    this.fetchParts()
                 }
             }
         </script>
@@ -151,230 +58,75 @@
         </ul>
     </div>
     <section x-data="saleDATA">
-        <div>
-            <!-- <div class="grid justify-center">
-                <ul class="steps" id="indicators">
-                    <li class="step step-neutral">Basic Info</li>
-                    <li class="step">Items</li>
-                    <li class="step">Finance</li>
-                    <li class="step">Finalize</li>
-                </ul>
-            </div> -->
+        <div class="relative">
+            <div class="items grid p-4 bg-neutral rounded-t-4xl fixed bottom-0 left-2 right-2 transition-all" :class="add_mode ? 'top-16' : 'top-full'">
+                <div class="grid pt-4 relative">
+                    <ul class="list">
+                        <li class="list-row sticky top-0">
+                            <input type="text" class="list-col-grow rounded-full px-4 py-2 bg-neutral border-2 border-base-300/50 placeholder:text-base-300/60" placeholder="Search here">
+                        </li>
+                        <template x-for="part in parts">
+                            <li x-show="!added_parts.includes(part)" class="list-row text-base-200 bg-base-content my-1">
+                                <div class="list-col-grow">
+                                    <div x-text="part.name"></div>
+                                    <span x-text="part.type.name" class="font-semibold opacity-60 text-xs"></span>
+                                    <div x-text="part.part_number" class="font-semibold opacity-80"></div>
+                                    <div x-text="part.selling_price.toLocaleString('en-US')"></div>
+                                </div>
+                                <div>
+                                    <button type="button" class="btn btn-ghost" @click="addItem(part)">
+                                        <svg class="size-[1.2em] -rotate-90" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+                                            <g stroke-linejoin="round" stroke-linecap="round" stroke-width="2" fill="none"
+                                                stroke="currentColor">
+                                                <path d="M6 3L20 12 6 21 6 3z"></path>
+                                            </g>
+                                        </svg>
+                                    </button>
+                                </div>
+                            </li>
+                        </template>
+                    </ul>
+                    <button type="button" class="h-12 w-12 rounded-box grid place-content-center text-error bg-error/10 absolute bottom-4 left-0" @click="add_mode = false">
+                        <span class="rotate-45 scale-150">&plus;</span>
+                    </button>
+                </div>
+            </div>
             <form method="post @container/saleform">
                 {% csrf_token %}
 
-                <div class="grid gap-4 sm:grid-cols-2">
-                    <div class="grid gap-4">
-                        <div class="w-full">
-                            <h3 class="text-2xl mb-4">Sale Details</h3>
-                            <fieldset class="fieldset">
-                                <legend class="fieldset-legend">Sale Date *</legend>
-                                {{ form.date|add_class:"input w-full"|attr:"type:date" }}
-                                <p class="fieldset-label">{{ form.date.help_text }}</p>
-                                <ul class="errors grid">
-                                    {% for error in form.date.errors %}
-                                    <li class="text-error">{{ error }}</li>
-                                    {% endfor %}
-                                </ul>
-                            </fieldset>
-                            <fieldset class="fieldset">
-                                <legend class="fieldset-legend">Sale Comments</legend>
-                                {{ form.comments|add_class:"textarea w-full" }}
-                                <p class="fieldset-label">{{ form.comments.help_text }}</p>
-                                <ul class="errors grid">
-                                    {% for error in form.comments.errors %}
-                                    <li class="text-error">{{ error }}</li>
-                                    {% endfor %}
-                                </ul>
-                            </fieldset>
-                        </div>
-                        {% with form=payment_form %}
-                        <div class="w-full">
-                            <h3 class="text-2xl mb-4">Payment Details</h3>
-                            <fieldset class="fieldset">
-                                <legend class="fieldset-legend">Payment Date *</legend>
-                                {{ form.payment_date|add_class:"input w-full" }}
-                                <p class="fieldset-label">{{ form.payment_date.help_text }}</p>
-                                <ul class="errors grid">
-                                    {% for error in form.payment_date.errors %}
-                                    <li class="text-error">{{ error }}</li>
-                                    {% endfor %}
-                                </ul>
-                            </fieldset>
-                            <fieldset class="fieldset">
-                                <legend class="fieldset-legend">Payment Method *</legend>
-                                {{ form.method|add_class:"select w-full" }}
-                                <p class="fieldset-label">{{ form.method.help_text }}</p>
-                                <ul class="errors grid">
-                                    {% for error in form.method.errors %}
-                                    <li class="text-error">{{ error }}</li>
-                                    {% endfor %}
-                                </ul>
-                            </fieldset>
-                            <fieldset class="fieldset">
-                                <legend class="fieldset-legend">Payment Amount *</legend>
-                                {{ form.amount|add_class:"input w-full" }}
-                                <p class="fieldset-label">{{ form.amount.help_text }}</p>
-                                <ul class="errors grid">
-                                    {% for error in form.amount.errors %}
-                                    <li class="text-error">{{ error }}</li>
-                                    {% endfor %}
-                                </ul>
-                            </fieldset>
-                        </div>
-                        {% endwith %}
-                    </div>
-                    <div>
-                        <h3 class="text-2xl mb-4">Parts</h3>
-                        <div class="grid">
-                            <div class="search-box w-full group relative z-50" x-data="{
-                                search_text: '',
-                                show_search: false,
-                                parts: [],
-                                toggleSearch(){
-                                    this.show_search = true
-                    
-                                    document.addEventListener('click', (event) => {this.checkClick(event)})
-                                },
-                                checkClick(event){
-                                    let element = event.target
-                    
-                                    if (element.classList.contains('search-box')) {
-                                        this.show_search = false
-                                        document.removeEventListener('click', (event) => {this.checkClick(event)})
-                                    }
-                                    
-                                    while (!element.classList.contains('search-box')) {
-                                        if (element.tagName == 'BODY'){
-                                            this.show_search = false
-                                            document.removeEventListener('click', (event) => {this.checkClick(event)})
-                                            break
-                                        }
-                                        element = element.parentElement
-                                    }
-                                },
-                                async handleSearch(){
-                                    let form = this.$refs.search_form
-                                    if (this.search_text.length > 2) {
-                                        form.requestSubmit()
-                                    }
-                                },
-                                fetchParts(){
-                                    
-                                }
-                            }">
-                                <div class="search-field grid gap-2 bg-base-100 p-1 px-2 outline outline-base-300 w-full max-w-[600px] rounded-md mx-auto accent-primary" @click="toggleSearch()" x-ref="search_form">
-                                    <div class="grid [grid-template-columns:1fr_auto] items-center">
-                                        <input type="text" x-model="search_text" @keyup="handleSearch()"
-                                            class="focus-within:outline-0 focus:outline-0 outline-0">
-                                        <button
-                                            class="grid place-content-center p-2 transition-colors hover:bg-base-content hover:text-base-100 rounded-md">
-                                            <i class="fas fa-search"></i>
+                <div class="grid items">
+                    <ul class="list bg-base-100 rounded-box shadow-md">
+                        <li class="list-row text-xs opacity-60 mb-2">Parts in Sale</li>
+                        <template x-for="item in sale.items">
+                            <li class="list-row">
+                                <div class="list-col-grow">
+                                    <div x-text="item.part.name"></div>
+                                    <!-- <span x-text="item.part.type.name" class="font-semibold opacity-60 text-xs"></span> -->
+                                    <div x-text="item.part.part_number" class="font-semibold opacity-80"></div>
+                                </div>
+                                <div>
+                                    <div x-text="`x${item.quantity}`"></div>
+                                    <div x-text="item.part.selling_price*item.quantity"></div>
+                                    <div class="flex flex-row-reverse gap-2">
+                                        <button type="button" class="h-8 w-8 rounded-box grid place-content-center text-neutral bg-neutral/10" @click="item.quantity++">
+                                            <span class="scale-150">&plus;</span>
+                                        </button>
+                                        <button type="button" class="h-8 w-8 rounded-box grid place-content-center text-neutral bg-neutral/10" @click="item.quantity--">
+                                            <span class="scale-150">&minus;</span>
+                                        </button>
+                                        <button type="button" class="h-8 w-8 rounded-box grid place-content-center text-error bg-error/10" @click="removeItem(item)">
+                                            <span class="rotate-45 scale-150">&plus;</span>
                                         </button>
                                     </div>
                                 </div>
-                                <div class="absolute grid left-1/2 mt-2 rounded-md p-4 bg-base-100 outline outline-grey-400 dark:outline-grey-600 w-full max-w-[750px] max-h-[70vh] overflow-y-auto min-h-[10rem] -translate-x-1/2 shadow-lg transition-all -translate-y-1/2 opacity-0"
-                                    :class="show_search ? 'translate-y-0 opacity-100' : ''" x-cloak x-show="show_search" x-collapse
-                                    x-duration.300>
-                                    <div class="relative h-full">
-                                        <div class="hx-indicator hidden absolute inset-0 bg-white" id="loader">
-                                            <div class="aspect-square animate-spin grid place-content-center h-full w-full">
-                                                <i class="fas fa-circle-notch text-2xl"></i>
-                                            </div>
-                                        </div>
-                                        <div id="search_results">
-                                            <span class="m-auto">Search to show items</span>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="formset grid">
-                            <input type="hidden" name="items-TOTAL_FORMS" x-model="next_id">
-                            <input type="hidden" name="items-INITIAL_FORMS" value="{{ formset.initial_form_count }}">
-                            <input type="hidden" name="items-MIN_NUM_FORMS" value="1">
-                            <input type="hidden" name="items-MAX_NUM_FORMS" value="1000">
-    
-                            <div id="formset-container" class="grid gap-y-8" x-ref="formsetContainer">
-                                {% for form in formset %}
-                                <div class="formsetItem" x-data="{}">
-                                    <fieldset class="fieldset">
-                                        <legend class="fieldset-legend">Part *</legend>
-                                        {{ form.part|add_class:"w-full select" }}
-                                        <p class="fieldset-label">{{ form.part.help_text }}</p>
-                                        <ul class="errors grid">
-                                            {% for error in form.part.errors %}
-                                            <li class="text-error">{{ error }}</li>
-                                            {% endfor %}
-                                        </ul>
-                                    </fieldset>
-                                    <fieldset class="fieldset">
-                                        <legend class="fieldset-legend">Quantity *</legend>
-                                        {{ form.quantity|add_class:"input affects_amount w-full"|attr:"type:number" }}
-                                        <p class="fieldset-label">{{ form.quantity.help_text }}</p>
-                                        <ul class="errors grid">
-                                            {% for error in form.quantity.errors %}
-                                            <li class="text-error">{{ error }}</li>
-                                            {% endfor %}
-                                        </ul>
-                                    </fieldset>
-                                    <fieldset class="fieldset col-span-2 sm:col-span-1">
-                                        <legend class="fieldset-legend">Delete</legend>
-                                        {{ form.DELETE|add_class:"checkbox checkbox-xl deletes_amount" }}
-                                    </fieldset>
-                                </div>
-                                {% endfor %}
-                            </div>
-    
-                            <div class="flex justify-end gap-3">
-                                <button class="btn btn-outline btn-neutral mb-2" type="button" @click="addItem()">
-                                    Add Item
-                                </button>
-                            </div>
-    
-                            <template x-ref="blank_formset">
-                                {% with form=formset.empty_form %}
-                                <div class="formsetItem" x-data="">
-                                    <fieldset class="fieldset">
-                                        <legend class="fieldset-legend">Part *</legend>
-                                        {{ form.part|add_class:"w-full select" }}
-                                        <p class="fieldset-label">{{ form.part.help_text }}</p>
-                                        <ul class="errors grid">
-                                            {% for error in form.part.errors %}
-                                            <li class="text-error">{{ error }}</li>
-                                            {% endfor %}
-                                        </ul>
-                                    </fieldset>
-                                    <fieldset class="fieldset">
-                                        <legend class="fieldset-legend">Unit Price *</legend>
-                                        {{ form.unit_price|add_class:"input affects_amount w-full"|attr:"type:number" }}
-                                        <p class="fieldset-label">{{ form.unit_price.help_text }}</p>
-                                        <p class="fieldset-label price_div"></p>
-                                        <ul class="errors grid">
-                                            {% for error in form.unit_price.errors %}
-                                            <li class="text-error">{{ error }}</li>
-                                            {% endfor %}
-                                        </ul>
-                                    </fieldset>
-                                    <fieldset class="fieldset">
-                                        <legend class="fieldset-legend">Quantity *</legend>
-                                        {{ form.quantity|add_class:"input affects_amount w-full"|attr:"type:number" }}
-                                        <p class="fieldset-label">{{ form.quantity.help_text }}</p>
-                                        <ul class="errors grid">
-                                            {% for error in form.quantity.errors %}
-                                            <li class="text-error">{{ error }}</li>
-                                            {% endfor %}
-                                        </ul>
-                                    </fieldset>
-                                    <fieldset class="fieldset col-span-2 sm:col-span-1">
-                                        <legend class="fieldset-legend">Delete</legend>
-                                        {{ form.DELETE|add_class:"checkbox checkbox-xl deletes_amount" }}
-                                    </fieldset>
-                                </div>
-                                {% endwith %}
-                            </template>
-                        </div>
-                    </div>
+                            </li>
+                        </template>
+                        <li class="p-4 mt-2">
+                            <button type="button" class="w-full btn btn-ghost" @click="add_mode = true">
+                                Add Item
+                            </button>
+                        </li>
+                    </ul>
                 </div>
 
                 <div class="form-actions">

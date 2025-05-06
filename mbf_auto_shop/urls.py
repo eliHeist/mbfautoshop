@@ -1,7 +1,7 @@
 from django.contrib import admin
 from django.urls import path, include
 
-from misc.api import api
+from misc.api.api import api_router
 
 from .appsConfig import getAppUrls
 
@@ -12,7 +12,7 @@ urlpatterns = [
     
     path("unicorn/", include("django_unicorn.urls")),
     
-    path('api/', api.urls),
+    path('api/', api_router.urls),
     # path("__reload__/", include("django_browser_reload.urls")),
 ]
 
