@@ -22,9 +22,9 @@ def adjust_stock(part, quantity, transaction_type, reverse=False):
 # === Handle CREATE and UPDATE ===
 @receiver(pre_save, sender=StockIn)
 def handle_stock_update(sender, instance, **kwargs):
-    print("\nPre save")
+    print("\nStockIn Pre save")
     print(instance)
-    print("\nPre save")
+    print("\nStockIn Pre save")
     if instance.pk:
         # It's an update, get the previous instance
         prev = StockIn.objects.get(pk=instance.pk)
@@ -50,9 +50,9 @@ def handle_stock_delete(sender, instance, **kwargs):
 # stock out
 @receiver(pre_save, sender=StockOut)
 def handle_stock_update(sender, instance, **kwargs):
-    print("\nPre save")
+    print("\nStockOutPre save")
     print(instance)
-    print("\nPre save")
+    print("\nStockOutPre save")
     if instance.pk:
         # It's an update, get the previous instance
         prev = StockOut.objects.get(pk=instance.pk)
@@ -77,9 +77,9 @@ def handle_stock_delete(sender, instance, **kwargs):
 # stock transaction
 @receiver(pre_save, sender=StockTransaction)
 def handle_stock_update(sender, instance, **kwargs):
-    print("\nPre save")
+    print("\nStockTransaction Pre save")
     print(instance)
-    print("\nPre save")
+    print("\nStockTransaction Pre save")
     if instance.pk:
         # It's an update, get the previous instance
         prev = StockTransaction.objects.get(pk=instance.pk)

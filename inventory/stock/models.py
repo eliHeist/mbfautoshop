@@ -30,11 +30,12 @@ class StockTransaction(models.Model):
         ('OUT', 'Stock Out'),
     ]
     
-    part = models.ForeignKey(Part, on_delete=models.CASCADE, related_name='stock_transactions')
     transaction_type = models.CharField(max_length=3, choices=TRANSACTION_TYPES)
+    date_added = models.DateTimeField(auto_now_add=True)
+    
+    part = models.ForeignKey(Part, on_delete=models.CASCADE, related_name='stock_transactions')
     quantity = models.PositiveIntegerField()
     date = models.DateTimeField()
-    date_added = models.DateTimeField(auto_now_add=True)
     remarks = models.TextField(blank=True, null=True)
     
     objects = StockTransactionManager()
@@ -58,6 +59,7 @@ class StockIn(StockTransaction):
 
 
 class StockOut(StockTransaction):
+    # stock_in = models.ForeignKey('StockTransaction', on_delete=models.CASCADE, null=True, blank=True, limit_choices_to={"transaction_type": "IN"})
     objects = StockOutManager()
 
     def save(self, *args, **kwargs):
