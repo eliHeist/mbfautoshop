@@ -10,26 +10,45 @@
                 search_text: '',
                 loading_state: false,
                 loading_message: '',
+                is_paid: true,
                 sale: {
+                    id: 0,
                     date: new Date().toISOString().split('T')[0],
-                    payment_date: new Date().toISOString().split('T')[0],
-                    items: [],
-                    getSubTotal() {
-                        let total = 0
-                        this.items.forEach((item) => {
-                            total += item.quantity * item.part.selling_price
-                        })
-                        return total
-                    }
+                    comments: ""
+                },
+                incomes: [],
+                sale_items: [],
+                getSubTotal() {
+                    let total = 0
+                    this.sale_items.forEach((item) => {
+                        total += item.stock_out.quantity * item.stock_out.part.selling_price
+                    })
+                    return total
+                },
+                getAmountPaid() {
+                    if (!this.is_paid) return 0
+                    if (this.incomes.length == 0) return this.getSubTotal()
+
+                    // situation with multiple payments of a down payment
+                    let total = 0
+                    this.incomes.forEach((income) => {
+                        total += income.amount
+                    })
+                    return total
                 },
                 async fetchParts() {
                     const request = await fetch("{% url 'api:get_all_parts' %}")
                     const response = await request.json()
                     this.parts = response
+                    console.log("Fetched parts")
                 },
                 filteredParts() {
                     parts = this.parts.filter((part) => {
-                        return part.name.toLowerCase().includes(this.search_text.toLowerCase()) || part.type.name.toLowerCase().includes(this.search_text.toLowerCase()) || part.part_number.toLowerCase().includes(this.search_text.toLowerCase())
+                        return part.stock_quantity >= 1 && (
+                            part.name.toLowerCase().includes(this.search_text.toLowerCase()) ||
+                            part.type.name.toLowerCase().includes(this.search_text.toLowerCase()) ||
+                            part.part_number.toLowerCase().includes(this.search_text.toLowerCase())
+                        )
                     })
                     return parts
                 },
@@ -38,32 +57,50 @@
                         return
                     }
 
+                    let sale = this.sale
+
                     let item = {
-                        id: 0,
-                        part: part,
-                        quantity: 1
+                        stock_out: {
+                            part: part,
+                            id: 0,
+                            quantity: 1,
+                            date: sale.date,
+                            remarks: string
+                        },
+                        sale: sale,
+                        id: 0
                     }
 
-                    this.sale.items.push(item)
+                    this.sale_items.push(item)
                     this.added_parts.push(part)
                 },
                 removeItem(item) {
                     this.added_parts = this.added_parts.filter((value) => {
-                        value != item.part
+                        value != item.stock_out.part
                     })
                     this.sale.items = this.sale.items.filter((value) => {
                         value != item
                     })
                 },
+                addIncome(method=null, amount=null, date=new Date().toISOString().split('T')[0]) {
+                    let income = {
+                        sale: this.sale,
+                        method_id: method,
+                        amount: amount,
+                        date: date
+                    }
+                    this.incomes.push(income)
+                },
                 init() {
+                    console.log("init")
                     this.fetchParts()
                 },
                 handleSubmit() {
                     this.loading_state = true
                     this.loading_message = 'Verifying...'
 
-                    // check if sale has a payment date, sale date, at least 1 item and each item has a quantity
-                    if (!this.sale.payment_date || !this.sale.date || this.sale.items.length == 0) {
+                    // check if sale has a sale date, at least 1 item
+                    if (!this.sale.date || this.sale_items.length == 0) {
                         this.loading_state = false
                         return
                     }
@@ -71,19 +108,44 @@
                     this.loading_message = 'Verifying items...'
 
                     // check if each item has a quantity
-                    for (let i = 0; i < this.sale.items.length; i++) {
-                        if (!this.sale.items[i].quantity || this.sale.items[i].quantity > this.sale.items[i].part.stock_quantity) {
-                            alert(`Check item ${this.sale.items[i].part.name}. \nQuantity must be greater than 0 and less than or equal to ${this.sale.items[i].part.stock_quantity}.`)
+                    for (let i = 0; i < this.sale_items.length; i++) {
+                        if (!this.sale_items[i].stock_out.quantity || this.sale_items[i].stock_out.quantity > this.sale_items[i].stock_out.part.stock_quantity) {
+                            alert(`Check item ${this.sale_items[i].stock_out.part.name}. \nQuantity must be greater than 0 and less than or equal to ${this.sale_items[i].stock_out.part.stock_quantity}.`)
                             this.loading_state = false
                             return
                         }
                     }
 
+                    // add incomes
+                    if (this.incomes.length == 0 && this.is_paid) {
+                        this.addIncome(method=1, amount=this.getSubTotal())
+                    }
+
+
                     this.postSale()
                 },
                 async postSale() {
-                    let url = ``
+                    let url = `{% url 'api:create_sale' %}`
+                    let request = await fetch(url, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'X-CSRFToken': getCookie('csrftoken')
+                        },
+                        body: JSON.stringify(this.sale)
+                    })
+                    if (!request.ok) {
+                        console.error(request.status + ': ' + request)
+                        console.error(request.body)
+                        this.loading_state = false
+                        return
+                    }
+
+                    let response = await request.json()
+                    this.loading_state = false
+                    window.location.href = `{% url 'sales:list' %}`
                 }
+
             }
         </script>
     </c-slot>
@@ -118,17 +180,23 @@
                             <li x-show="!added_parts.includes(part)"
                                 class="list-row text-base-200 bg-base-content my-1">
                                 <div class="list-col-grow">
-                                    <div x-text="part.name"></div>
-                                    <span x-text="part.type.name" class="font-semibold opacity-60 text-xs"></span>
+                                    <div>
+                                        <span x-text="part.name"></span>
+                                        x
+                                        <span x-text="part.stock_quantity"></span>
+                                    </div>
                                     <div x-text="part.part_number" class="font-semibold opacity-80"></div>
-                                    <div x-text="Number(part.selling_price).toLocaleString()"></div>
+                                    <span x-text="part.type.name" class="font-semibold opacity-60 text-xs"></span>
                                 </div>
-                                <div>
-                                    <button type="button"
-                                        class="h-12 w-12 rounded-box grid place-content-center text-success bg-success/10"
-                                        @click="addItem(part)">
-                                        <span class="">&UpArrow;</span>
-                                    </button>
+                                <div class="">
+                                    <div>
+                                        <button type="button"
+                                            class="h-10 w-10 rounded-box grid place-content-center text-success bg-success/10"
+                                            @click="addItem(part)">
+                                            <span class="">&UpArrow;</span>
+                                        </button>
+                                    </div>
+                                    <div><span x-text="Number(part.selling_price).toLocaleString()"></span></div>
                                 </div>
                             </li>
                         </template>
@@ -140,7 +208,7 @@
                     </button>
                 </div>
             </div>
-            <form method="post @container/saleform">
+            <form method="post @container/saleform" @submit.prevent="handleSubmit()">
                 {% csrf_token %}
                 <div class="sale mb-4">
                     <div class="collapse collapse-plus">
@@ -149,13 +217,13 @@
                         <div class="collapse-content rounded-box text-sm bg-base-100 border-base-300 border">
                             <fieldset class="fieldset">
                                 <legend class="fieldset-legend">Sale date</legend>
-                                <input type="date" name="date" class="input" x-model="sale.date"/>
+                                <input type="date" name="date" class="input" x-model="sale.date" />
                                 <p class="label">When the items left the store</p>
                             </fieldset>
                             <fieldset class="fieldset">
-                                <legend class="fieldset-legend">Payment date</legend>
-                                <input type="date" name="date" class="input" x-model="sale.payment_date"/>
-                                <p class="label">When the payment was made</p>
+                                <legend class="fieldset-legend">Comments</legend>
+                                <textarea type="date" name="comments" class="textarea" x-model="sale.comments" />
+                                <!-- <p class="label">When the items left the store</p> -->
                             </fieldset>
                         </div>
                     </div>
@@ -166,12 +234,12 @@
                         <li class="list-row text-xs opacity-60 mb-2">Parts in Sale
                             <div class="badge badge-xs badge-info badge-outline ml-2" x-text="sale.items.length"></div>
                         </li>
-                        <template x-for="item in sale.items">
+                        <template x-for="item in sale_items">
                             <li class="list-row">
                                 <div class="list-col-grow">
-                                    <div x-text="item.part.name"></div>
-                                    <!-- <span x-text="item.part.type.name" class="font-semibold opacity-60 text-xs"></span> -->
-                                    <div x-text="item.part.part_number" class="font-semibold opacity-80"></div>
+                                    <div x-text="item.stock_out.part.name"></div>
+                                    <!-- <span x-text="item.stock_out.part.type.name" class="font-semibold opacity-60 text-xs"></span> -->
+                                    <div x-text="item.stock_out.part.part_number" class="font-semibold opacity-80"></div>
                                     <div class="flex gap-2">
                                         <button type="button"
                                             class="h-8 w-8 rounded-box grid place-content-center text-error bg-error/10"
@@ -181,19 +249,18 @@
                                     </div>
                                 </div>
                                 <div>
-                                    <div x-text="`x${item.quantity}`"></div>
-                                    <div x-text="(item.part.selling_price*item.quantity).toLocaleString()"></div>
+                                    <div x-text="`x${item.stock_out.quantity}`"></div>
+                                    <div x-text="(item.stock_out.part.selling_price*item.stock_out.quantity).toLocaleString()"></div>
                                     <div class="flex flex-row-reverse gap-2">
                                         <button type="button"
                                             class="h-8 w-8 rounded-box grid place-content-center text-neutral bg-neutral/10 disabled:opacity-20 disabled:cursor-not-allowed"
-                                            :disabled="item.quantity >= item.part.stock_quantity"
-                                            @click="item.quantity++">
+                                            :disabled="item.stock_out.quantity >= item.stock_out.part.stock_quantity"
+                                            @click="item.stock_out.quantity++">
                                             <span class="scale-150">&plus;</span>
                                         </button>
                                         <button type="button"
                                             class="h-8 w-8 rounded-box grid place-content-center text-neutral bg-neutral/10 disabled:opacity-20 disabled:cursor-not-allowed"
-                                            :disabled="item.quantity <= 1"
-                                            @click="item.quantity--">
+                                            :disabled="item.stock_out.quantity <= 1" @click="item.stock_out.quantity--">
                                             <span class="scale-150">&minus;</span>
                                         </button>
                                     </div>
@@ -207,30 +274,51 @@
                         </li>
                         <li class="list-row">
                             <div class="list-col-grow">Subtotal</div>
-                            <div class="font-semibold" x-text="sale.getSubTotal().toLocaleString()"></div>
+                            <div class="font-semibold" x-text="getSubTotal().toLocaleString()"></div>
                         </li>
                         <li class="list-row p-4 mt-4">
                             <div class="list-col-grow">Total</div>
-                            <div class="font-semibold" x-text="sale.getSubTotal().toLocaleString()"></div>
+                            <div class="font-semibold" x-text="getSubTotal().toLocaleString()"></div>
                         </li>
                     </ul>
                 </div>
 
                 <div class="form-actions grid mt-4">
-                    <button class="btn btn-primary" type="submit">Save</button>
+                    <!-- Open the modal using ID.showModal() method -->
+                    <button type="button" :disabled="sale.items.length <= 0" class="btn btn-primary"
+                        onclick="my_modal_1.showModal()">Submit</button>
+                    <dialog id="my_modal_1" class="modal">
+                        <div class="modal-box">
+                            <h3 class="text-lg font-bold">Confirm Sale!</h3>
+                            <div class="py-4">
+                                <ul class="list">
+                                    <li class="list-row text-xs opacity-60 mb-2">
+                                        <div class="list-col-grow">Sale date</div>
+                                        <div class="font-semibold" x-text="sale.date"></div>
+                                    </li>
+                                    <li class="list-row text-xs opacity-60 mb-2">
+                                        <div class="list-col-grow">Items</div>
+                                        <div class="font-semibold" x-text="sale_items.length"></div>
+                                    </li>
+                                    <li class="list-row text-xs opacity-60 mb-2">
+                                        <div class="list-col-grow">Total Amount</div>
+                                        <div class="font-semibold" x-text="getSubTotal().toLocaleString()"></div>
+                                    </li>
+                                    <li class="list-row text-xs opacity-60 mb-2">
+                                        <div class="list-col-grow">Amount Paid</div>
+                                        <div class="font-semibold" x-text="getAmountPaid().toLocaleString()"></div>
+                                    </li>
+                                </ul>
+                            </div>
+                            <div class="modal-action">
+                                <button class="btn btn-primary" type="submit">&#128190; Save</button>
+                                <button type="button" class="btn" onclick="my_modal_1.close()">&#10006; Close</button>
+                            </div>
+                        </div>
+                    </dialog>
                 </div>
 
             </form>
         </div>
     </section>
-
-    <script>
-        new TomSelect("select.tom-select", {
-            create: false,
-            sortField: {
-                field: "text",
-                direction: "asc"
-            }
-        });
-    </script>
 </c-layout>

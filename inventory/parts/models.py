@@ -47,5 +47,10 @@ class Part(models.Model):
         print(f"\nStock IN: {stock_in}")
         print(f"\nStock OUT: {stock_out}")
         
-        self.stock_quantity = stock_in - stock_out
-        self.save()
+        stock_quantity = stock_in - stock_out
+        
+        if stock_quantity != self.stock_quantity:
+            self.stock_quantity = stock_quantity
+            self.save()
+            
+        return self.stock_quantity

@@ -13,11 +13,12 @@ class Payment(models.Model):
         ('EX', 'Expense'),
     ]
     
+    date_added = models.DateTimeField(auto_now_add=True)
     type = models.CharField(max_length=3, choices=PAYMENT_TYPES, null=True)
+
     sale = models.ForeignKey(Sale, on_delete=models.CASCADE, related_name="payments", null=True, blank=True)
     method = models.ForeignKey(PaymentMethod, on_delete=models.SET_NULL, null=True, blank=True)
     amount = models.DecimalField(max_digits=10, decimal_places=2)
-    date_added = models.DateTimeField(auto_now_add=True)
     date = models.DateField()
 
     def __str__(self):

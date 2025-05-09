@@ -20,11 +20,10 @@ class Sale(models.Model):
 
 class SaleItem(models.Model):
     sale = models.ForeignKey(Sale, related_name="items", on_delete=models.CASCADE)
-    part = models.ForeignKey(Part, on_delete=models.CASCADE)
     stock_out = models.OneToOneField(StockOut, on_delete=models.CASCADE, null=True)
 
     def __str__(self):
-        return f"{self.quantity} x {self.part.name} (Sale {self.sale.id})"
+        return f"{self.quantity} x {self.stock_out.part.name} (Sale {self.sale.id})"
     
     def amount(self):
         return self.stock_out.quantity * self.unit_price

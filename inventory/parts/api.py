@@ -13,7 +13,7 @@ def get_parts(request):
     return []
 
 @part_api.get("/search/", response=list[PartSchema], url_name="search_parts")
-def get_parts(request):
+def search_parts(request):
     query = request.GET.get("q")
     if request.user and query:
         number_matches = Part.objects.filter(part_number__icontains=query)
